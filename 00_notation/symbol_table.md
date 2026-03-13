@@ -104,7 +104,24 @@
 | $w[n]$ | Window function (discrete) | -- | -- |
 | $\chi(\tau, \nu)$ | Ambiguity function | -- | -- |
 
-## 6. Physical Constants
+## 7. Hardware and Power
+
+| Symbol | Definition | Units | IEEE 686 Ref |
+|--------|-----------|-------|--------------|
+| $V_\text{rail}$ | Voltage rail value | V | -- |
+| $I_\text{rail}$ | Current draw per rail | A | -- |
+| $P_\text{diss}$ | Power dissipation | W | -- |
+| $T_\text{junction}$ | Junction temperature | C or K | -- |
+| $\theta_{JA}$ | Thermal resistance, junction-to-ambient | C/W or K/W | -- |
+| $t_\text{lock}$ | PLL lock time | s | lock time |
+| $\mathcal{L}(f_m)$ | Phase noise at offset $f_m$ from carrier | dBc/Hz | phase noise |
+| $t_\text{pipeline}$ | End-to-end pipeline latency | s | -- |
+| $N_\text{LUT}$ | FPGA look-up table count | -- | -- |
+| $N_\text{FF}$ | FPGA flip-flop count | -- | -- |
+| $N_\text{BRAM}$ | FPGA Block RAM count | -- | -- |
+| $N_\text{DSP}$ | FPGA DSP48E1 slice count | -- | -- |
+
+## 8. Physical Constants
 
 | Symbol | Definition | Value | Units |
 |--------|-----------|-------|-------|
