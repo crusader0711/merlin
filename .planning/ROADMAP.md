@@ -29,11 +29,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. A project-wide symbol table exists following IEEE 686-2024 conventions, and every symbol used in later documents is defined there
   2. A master system parameter table exists with canonical values for both AERIS-10 variants (Nexus and Extended), covering center frequency, bandwidth, PRF, ADC rate, antenna gain, noise figure, and FPGA resources
   3. An equation numbering convention and cross-reference format is established and documented so all subsequent physics/hardware/software documents can reference equations consistently
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md — Equation/formatting conventions and project-wide symbol table (NOTN-01, NOTN-03)
+- [ ] 01-02-PLAN.md — Master system parameter table for both AERIS-10 variants (NOTN-02)
 
 ### Phase 2: Physics Foundation
 **Goal**: Engineers can trace any signal processing operation in the radar back to a first-principles physics derivation
@@ -124,7 +124,7 @@ Phases 1 through 4 execute sequentially. Phases 5 and 6 can execute in parallel 
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Notation & Parameter Standardization | 0/TBD | Not started | - |
+| 1. Notation & Parameter Standardization | 0/2 | Planning complete | - |
 | 2. Physics Foundation | 0/TBD | Not started | - |
 | 3. Hardware Documentation | 0/TBD | Not started | - |
 | 4. Software Documentation | 0/TBD | Not started | - |
