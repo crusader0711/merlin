@@ -48,7 +48,7 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Symbol table additions and FMCW theory from first principles with range-Doppler coupling (PHYS-01, PHYS-05)
+- [x] 02-01-PLAN.md — Symbol table additions and FMCW theory from first principles with range-Doppler coupling (PHYS-01, PHYS-05)
 - [ ] 02-02-PLAN.md — LFM waveform model and detection theory (PHYS-02, PHYS-04)
 - [ ] 02-03-PLAN.md — Beamforming theory and antenna calibration theory (PHYS-03, PHYS-07)
 - [ ] 02-04-PLAN.md — Cascaded noise figure chain analysis (PHYS-06)

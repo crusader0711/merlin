@@ -65,6 +65,9 @@ Recent decisions affecting current work:
 - [01-01]: Plain-text cross-references because GitHub MathJax does not support \ref{}/\eqref{}
 - [01-01]: IEEE 686-2024 as notation authority with Skolnik/Richards as secondary references
 - [01-01]: Physical constants in symbol table; all system parameter values deferred to parameter_table.md
+- [02-01]: Derived full beat frequency with Doppler term first (FMCW-16), then stationary-target approximation as labeled special case
+- [02-01]: 30 tagged equations (FMCW-1 through FMCW-30) to avoid skipping intermediate algebraic steps
+- [02-01]: Range-Doppler coupling analyzed symbolically with T_c1/T_c2 = 60 ratio; numerical eval deferred pending bandwidth B
 - [02-04]: ADC effective noise figure modeled as signal-level-dependent (not fixed) due to 8-bit quantization constraint
 - [02-04]: CIC filter noise analysis extends chain past ADC with bit growth, passband droop, and truncation noise
 - [02-04]: Representative placeholder values clearly labeled for numerical examples (per research recommendation)
