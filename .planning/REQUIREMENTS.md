@@ -7,9 +7,9 @@
 
 ### Notation & Standards (NOTN)
 
-- [ ] **NOTN-01**: Project-wide symbol table following IEEE 686-2024 notation conventions
+- [x] **NOTN-01**: Project-wide symbol table following IEEE 686-2024 notation conventions
 - [x] **NOTN-02**: Master system parameter table with canonical values for both AERIS-10 variants (Nexus/Extended)
-- [ ] **NOTN-03**: Equation numbering convention and cross-reference format established
+- [x] **NOTN-03**: Equation numbering convention and cross-reference format established
 
 ### Physics Documentation (PHYS)
 
@@ -89,9 +89,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NOTN-01 | Phase 1 | Pending |
+| NOTN-01 | Phase 1 | Complete |
 | NOTN-02 | Phase 1 | Complete |
-| NOTN-03 | Phase 1 | Pending |
+| NOTN-03 | Phase 1 | Complete |
 | PHYS-01 | Phase 2 | Pending |
 | PHYS-02 | Phase 2 | Pending |
 | PHYS-03 | Phase 2 | Pending |

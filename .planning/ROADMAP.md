@@ -32,7 +32,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Equation/formatting conventions and project-wide symbol table (NOTN-01, NOTN-03)
+- [x] 01-01-PLAN.md — Equation/formatting conventions and project-wide symbol table (NOTN-01, NOTN-03)
 - [ ] 01-02-PLAN.md — Master system parameter table for both AERIS-10 variants (NOTN-02)
 
 ### Phase 2: Physics Foundation
@@ -124,7 +124,7 @@ Phases 1 through 4 execute sequentially. Phases 5 and 6 can execute in parallel 
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Notation & Parameter Standardization | 2/2 | Complete   | 2026-03-13 |
+| 1. Notation & Parameter Standardization | 1/2 | Executing | - |
 | 2. Physics Foundation | 0/TBD | Not started | - |
 | 3. Hardware Documentation | 0/TBD | Not started | - |
 | 4. Software Documentation | 0/TBD | Not started | - |

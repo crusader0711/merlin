@@ -2,25 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Completed 01-02-PLAN.md
-last_updated: "2026-03-13T22:18:28.711Z"
-last_activity: 2026-03-13 — Completed 01-02-PLAN.md (parameter table)
-progress:
-  total_phases: 6
-  completed_phases: 0
-  total_plans: 2
-  completed_plans: 1
----
-
----
-gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: planning
-stopped_at: Roadmap created, ready to plan Phase 1
-last_updated: "2026-03-13T22:18:07.646Z"
-last_activity: 2026-03-13 — Roadmap created
+status: executing
+stopped_at: Completed 01-01-PLAN.md (conventions and symbol table)
+last_updated: "2026-03-13T22:17:57Z"
+last_activity: 2026-03-13 — Completed 01-01-PLAN.md
 progress:
   total_phases: 6
   completed_phases: 0
@@ -41,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-03-13)
 ## Current Position
 
 Phase: 1 of 6 (Notation & Parameter Standardization)
-Plan: 2 of 3 in current phase
+Plan: 2 of 2 in current phase
 Status: Executing
-Last activity: 2026-03-13 — Completed 01-02-PLAN.md (parameter table)
+Last activity: 2026-03-13 — Completed 01-01-PLAN.md (conventions and symbol table)
 
 Progress: [█████░░░░░] 50%
 
@@ -51,17 +36,17 @@ Progress: [█████░░░░░] 50%
 
 **Velocity:**
 - Total plans completed: 1
-- Average duration: -
-- Total execution time: 0 hours
+- Average duration: 3 min
+- Total execution time: 0.05 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 1 - Notation | 1/2 | 3 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: -
+- Last 5 plans: 01-01 (3 min)
 - Trend: -
 
 *Updated after each plan completion*
@@ -76,8 +61,10 @@ Recent decisions affecting current work:
 - [Roadmap]: Strict dependency chain: Notation -> Physics -> Hardware -> Software -> Research (no skipping ahead)
 - [Roadmap]: Phases 5 and 6 (SW/HW research) can execute in parallel after Phase 4 completes
 - [Roadmap]: GUI_V6.py is the canonical software version; V1-V5 explicitly excluded from documentation
-- [Phase 01]: Center frequency canonical at 10.5 GHz; GUI default of 10.0 GHz flagged for correction
-- [Phase 01]: ADC canonical at 8-bit (AD9484); STACK.md 14-bit claim is incorrect
+- [01-01]: Document-prefix equation numbering (FMCW-N, LFM-N, BF-N) chosen over section-based numbering for cross-document uniqueness
+- [01-01]: Plain-text cross-references because GitHub MathJax does not support \ref{}/\eqref{}
+- [01-01]: IEEE 686-2024 as notation authority with Skolnik/Richards as secondary references
+- [01-01]: Physical constants in symbol table; all system parameter values deferred to parameter_table.md
 
 ### Pending Todos
 
@@ -91,6 +78,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T22:18:28.710Z
-Stopped at: Completed 01-02-PLAN.md
+Last session: 2026-03-13T22:17:57Z
+Stopped at: Completed 01-01-PLAN.md (conventions and symbol table)
 Resume file: None
