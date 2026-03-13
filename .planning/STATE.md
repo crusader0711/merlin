@@ -3,30 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-02-PLAN.md (LFM waveform model and detection theory)
-last_updated: "2026-03-13T23:05:57.287Z"
+stopped_at: Completed 03-01-PLAN.md (system overview and hardware symbols)
+last_updated: "2026-03-13T23:36:35.572Z"
 last_activity: 2026-03-13 — Completed 02-02-PLAN.md (LFM waveform model and detection theory)
 progress:
   total_phases: 6
   completed_phases: 2
-  total_plans: 6
-  completed_plans: 6
----
-
----
-gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: executing
-stopped_at: Completed 02-02-PLAN.md (LFM waveform model and detection theory)
-last_updated: "2026-03-13T23:01:33Z"
-last_activity: 2026-03-13 — Completed 02-02-PLAN.md (LFM waveform model and detection theory)
-progress:
-  total_phases: 6
-  completed_phases: 2
-  total_plans: 6
-  completed_plans: 6
-  percent: 100
+  total_plans: 11
+  completed_plans: 7
 ---
 
 # Project State
@@ -36,23 +20,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-13)
 
 **Core value:** Produce engineering-grade documentation capturing the complete AERIS-10 radar system from first-principles physics through hardware to software, so the team can maintain and improve the radar without tribal knowledge.
-**Current focus:** Phase 2 - Physics Foundation (complete)
+**Current focus:** Phase 3 - Hardware Documentation
 
 ## Current Position
 
-Phase: 2 of 6 (Physics Foundation) -- all plans complete
-Plan: 4 of 4 in current phase (all complete)
+Phase: 3 of 6 (Hardware Documentation)
+Plan: 1 of 5 in current phase (1 complete)
 Status: Executing
-Last activity: 2026-03-13 — Completed 02-02-PLAN.md (LFM waveform model and detection theory)
+Last activity: 2026-03-14 — Completed 03-01-PLAN.md (system overview and hardware symbols)
 
-Progress: [██████████] 100%
+Progress: [██████░░░░] 64%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
+- Total plans completed: 7
 - Average duration: 4 min
-- Total execution time: 0.40 hours
+- Total execution time: 0.43 hours
 
 **By Phase:**
 
@@ -60,9 +44,10 @@ Progress: [██████████] 100%
 |-------|-------|-------|----------|
 | 1 - Notation | 2/2 | 6 min | 3 min |
 | 2 - Physics | 4/4 | 18 min | 4.5 min |
+| 3 - Hardware | 1/5 | 2 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (3 min), 02-04 (3 min), 02-03 (5 min), 02-01 (3 min), 02-02 (7 min)
+- Last 5 plans: 02-04 (3 min), 02-03 (5 min), 02-01 (3 min), 02-02 (7 min), 03-01 (2 min)
 - Trend: steady
 
 *Updated after each plan completion*
@@ -95,6 +80,7 @@ Recent decisions affecting current work:
 - [02-04]: ADC effective noise figure modeled as signal-level-dependent (not fixed) due to 8-bit quantization constraint
 - [02-04]: CIC filter noise analysis extends chain past ADC with bit growth, passband droop, and truncation noise
 - [02-04]: Representative placeholder values clearly labeled for numerical examples (per research recommendation)
+- [Phase 03]: HW-SYS equation prefix for system overview; 12 hardware symbols in new Section 7 of symbol table
 
 ### Pending Todos
 
@@ -108,6 +94,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T23:01:33.172Z
-Stopped at: Completed 02-02-PLAN.md (LFM waveform model and detection theory)
+Last session: 2026-03-13T23:36:35.570Z
+Stopped at: Completed 03-01-PLAN.md (system overview and hardware symbols)
 Resume file: None
