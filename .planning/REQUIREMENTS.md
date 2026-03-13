@@ -18,7 +18,7 @@
 - [ ] **PHYS-03**: Beamforming theory — array factor derivation, phase shift per element for ADAR1000, grating lobe conditions, beam patterns
 - [ ] **PHYS-04**: Detection theory — CFAR derivation with Neyman-Pearson criterion, false alarm probability, detection probability curves
 - [ ] **PHYS-05**: Range-Doppler coupling analysis — full beat frequency with Doppler term, impact on 30us vs 0.5us chirps, compensation approaches
-- [ ] **PHYS-06**: Noise figure chain analysis — cascaded NF through LNA (ADTR1107), mixer (LT5552), ADC (AD9484), CIC filter
+- [x] **PHYS-06**: Noise figure chain analysis — cascaded NF through LNA (ADTR1107), mixer (LT5552), ADC (AD9484), CIC filter
 - [ ] **PHYS-07**: Antenna array calibration theory — phase/amplitude error correction, ADAR1000 phase quantization effects, inter-element coupling
 
 ### Hardware Documentation (HDWR)
@@ -97,7 +97,7 @@
 | PHYS-03 | Phase 2 | Pending |
 | PHYS-04 | Phase 2 | Pending |
 | PHYS-05 | Phase 2 | Pending |
-| PHYS-06 | Phase 2 | Pending |
+| PHYS-06 | Phase 2 | Complete |
 | PHYS-07 | Phase 2 | Pending |
 | HDWR-01 | Phase 3 | Pending |
 | HDWR-02 | Phase 3 | Pending |

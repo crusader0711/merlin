@@ -3,30 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-01-PLAN.md (conventions and symbol table)
-last_updated: "2026-03-13T22:23:09.032Z"
-last_activity: 2026-03-13 — Completed 01-01-PLAN.md (conventions and symbol table)
+stopped_at: Completed 02-04-PLAN.md (noise figure chain analysis)
+last_updated: "2026-03-13T22:49:00Z"
+last_activity: 2026-03-13 — Completed 02-04-PLAN.md (noise figure chain analysis)
 progress:
   total_phases: 6
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
----
-
----
-gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: executing
-stopped_at: Completed 01-01-PLAN.md (conventions and symbol table)
-last_updated: "2026-03-13T22:17:57Z"
-last_activity: 2026-03-13 — Completed 01-01-PLAN.md
-progress:
-  total_phases: 6
-  completed_phases: 0
-  total_plans: 2
-  completed_plans: 1
-  percent: 50
+  total_plans: 6
+  completed_plans: 3
 ---
 
 # Project State
@@ -36,33 +20,34 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-13)
 
 **Core value:** Produce engineering-grade documentation capturing the complete AERIS-10 radar system from first-principles physics through hardware to software, so the team can maintain and improve the radar without tribal knowledge.
-**Current focus:** Phase 1 - Notation & Parameter Standardization
+**Current focus:** Phase 2 - Physics Foundation
 
 ## Current Position
 
-Phase: 1 of 6 (Notation & Parameter Standardization)
-Plan: 2 of 2 in current phase
+Phase: 2 of 6 (Physics Foundation)
+Plan: 4 of 4 in current phase
 Status: Executing
-Last activity: 2026-03-13 — Completed 01-01-PLAN.md (conventions and symbol table)
+Last activity: 2026-03-13 — Completed 02-04-PLAN.md (noise figure chain analysis)
 
 Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
+- Total plans completed: 3
 - Average duration: 3 min
-- Total execution time: 0.05 hours
+- Total execution time: 0.15 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 - Notation | 1/2 | 3 min | 3 min |
+| 2 - Physics | 1/4 | 3 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (3 min)
-- Trend: -
+- Last 5 plans: 01-01 (3 min), 02-04 (3 min)
+- Trend: steady
 
 *Updated after each plan completion*
 
@@ -80,6 +65,9 @@ Recent decisions affecting current work:
 - [01-01]: Plain-text cross-references because GitHub MathJax does not support \ref{}/\eqref{}
 - [01-01]: IEEE 686-2024 as notation authority with Skolnik/Richards as secondary references
 - [01-01]: Physical constants in symbol table; all system parameter values deferred to parameter_table.md
+- [02-04]: ADC effective noise figure modeled as signal-level-dependent (not fixed) due to 8-bit quantization constraint
+- [02-04]: CIC filter noise analysis extends chain past ADC with bit growth, passband droop, and truncation noise
+- [02-04]: Representative placeholder values clearly labeled for numerical examples (per research recommendation)
 
 ### Pending Todos
 
@@ -93,6 +81,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T22:17:57Z
-Stopped at: Completed 01-01-PLAN.md (conventions and symbol table)
+Last session: 2026-03-13T22:49:00Z
+Stopped at: Completed 02-04-PLAN.md (noise figure chain analysis)
 Resume file: None
