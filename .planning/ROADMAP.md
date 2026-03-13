@@ -12,7 +12,7 @@ This project produces engineering-grade documentation for the AERIS-10 FMCW phas
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [x] **Phase 1: Notation & Parameter Standardization** - Establish project-wide symbol table, master parameter table, and cross-reference conventions before any derivations begin (completed 2026-03-13)
+- [x] **Phase 1: Notation & Parameter Standardization** - Establish project-wide symbol table, master parameter table, and cross-reference conventions before any derivations begin (completed 2026-03-13)
 - [ ] **Phase 2: Physics Foundation** - Derive FMCW theory, signal models, beamforming, and detection theory from first principles
 - [ ] **Phase 3: Hardware Documentation** - Document all hardware subsystems with component specs, register maps, and analysis
 - [ ] **Phase 4: Software Documentation** - Document FPGA pipeline, STM32 firmware, and Python GUI by signal/data flow
@@ -45,12 +45,13 @@ Plans:
   3. Beamforming array factor is derived for the 16-element geometry with ADAR1000 phase shift per element, grating lobe conditions, and beam pattern plots
   4. CFAR detection theory is derived from Neyman-Pearson criterion through false alarm probability to detection probability curves, with the clutter distribution assumption made explicit
   5. Noise figure chain analysis traces cascaded NF through the full receive path (ADTR1107 LNA, LT5552 mixer, AD9484 ADC, CIC filter) and antenna calibration theory covers ADAR1000 phase/amplitude error correction
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
-- [ ] 02-03: TBD
+- [ ] 02-01-PLAN.md — Symbol table additions and FMCW theory from first principles with range-Doppler coupling (PHYS-01, PHYS-05)
+- [ ] 02-02-PLAN.md — LFM waveform model and detection theory (PHYS-02, PHYS-04)
+- [ ] 02-03-PLAN.md — Beamforming theory and antenna calibration theory (PHYS-03, PHYS-07)
+- [ ] 02-04-PLAN.md — Cascaded noise figure chain analysis (PHYS-06)
 
 ### Phase 3: Hardware Documentation
 **Goal**: Engineers can locate any hardware subsystem's specifications, register maps, interface details, and operational constraints in one place
@@ -125,7 +126,7 @@ Phases 1 through 4 execute sequentially. Phases 5 and 6 can execute in parallel 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Notation & Parameter Standardization | 1/2 | Executing | - |
-| 2. Physics Foundation | 0/TBD | Not started | - |
+| 2. Physics Foundation | 0/4 | Planned | - |
 | 3. Hardware Documentation | 0/TBD | Not started | - |
 | 4. Software Documentation | 0/TBD | Not started | - |
 | 5. Software Improvement Research | 0/TBD | Not started | - |
