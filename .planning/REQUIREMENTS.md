@@ -24,8 +24,8 @@
 ### Hardware Documentation (HDWR)
 
 - [x] **HDWR-01**: System overview with master parameter table — center frequency, bandwidth, PRF, ADC rate, antenna gain, NF, FPGA resources
-- [ ] **HDWR-02**: RF front-end documentation — ADTR1107 LNA/PA, LT5552 mixer, AD9484 ADC with register maps, SPI sequences, key specs (NF, IP3)
-- [ ] **HDWR-03**: Frequency synthesis documentation — ADF4382 synthesizers, AD9523 clock generator, phase noise specifications, lock time
+- [x] **HDWR-02**: RF front-end documentation — ADTR1107 LNA/PA, LT5552 mixer, AD9484 ADC with register maps, SPI sequences, key specs (NF, IP3)
+- [x] **HDWR-03**: Frequency synthesis documentation — ADF4382 synthesizers, AD9523 clock generator, phase noise specifications, lock time
 - [x] **HDWR-04**: Antenna array & beamforming documentation — ADAR1000 phase shifters, 16-element array geometry, beam steering tables
 - [x] **HDWR-05**: FPGA board documentation — XC7A100T clock domains (100/120/400 MHz), CDC synchronizers, BUFG usage, LUT/FF/BRAM utilization
 - [ ] **HDWR-06**: Power management documentation — GPIO-controlled rail sequencing, voltage rails, thermal management, fan control
@@ -100,8 +100,8 @@
 | PHYS-06 | Phase 2 | Complete |
 | PHYS-07 | Phase 2 | Complete |
 | HDWR-01 | Phase 3 | Complete |
-| HDWR-02 | Phase 3 | Pending |
-| HDWR-03 | Phase 3 | Pending |
+| HDWR-02 | Phase 3 | Complete |
+| HDWR-03 | Phase 3 | Complete |
 | HDWR-04 | Phase 3 | Complete |
 | HDWR-05 | Phase 3 | Complete |
 | HDWR-06 | Phase 3 | Pending |
