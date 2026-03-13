@@ -17,7 +17,7 @@
 - [ ] **PHYS-02**: LFM waveform model — chirp signal math, time-bandwidth product, pulse compression gain, ambiguity function
 - [ ] **PHYS-03**: Beamforming theory — array factor derivation, phase shift per element for ADAR1000, grating lobe conditions, beam patterns
 - [ ] **PHYS-04**: Detection theory — CFAR derivation with Neyman-Pearson criterion, false alarm probability, detection probability curves
-- [ ] **PHYS-05**: Range-Doppler coupling analysis — full beat frequency with Doppler term, impact on 30µs vs 0.5µs chirps, compensation approaches
+- [ ] **PHYS-05**: Range-Doppler coupling analysis — full beat frequency with Doppler term, impact on 30us vs 0.5us chirps, compensation approaches
 - [ ] **PHYS-06**: Noise figure chain analysis — cascaded NF through LNA (ADTR1107), mixer (LT5552), ADC (AD9484), CIC filter
 - [ ] **PHYS-07**: Antenna array calibration theory — phase/amplitude error correction, ADAR1000 phase quantization effects, inter-element coupling
 
@@ -29,9 +29,9 @@
 - [ ] **HDWR-04**: Antenna array & beamforming documentation — ADAR1000 phase shifters, 16-element array geometry, beam steering tables
 - [ ] **HDWR-05**: FPGA board documentation — XC7A100T clock domains (100/120/400 MHz), CDC synchronizers, BUFG usage, LUT/FF/BRAM utilization
 - [ ] **HDWR-06**: Power management documentation — GPIO-controlled rail sequencing, voltage rails, thermal management, fan control
-- [ ] **HDWR-07**: Timing budget & latency analysis — ADC → DDC → CIC → matched filter → FFT → CFAR → USB end-to-end pipeline latency
+- [ ] **HDWR-07**: Timing budget & latency analysis — ADC to DDC to CIC to matched filter to FFT to CFAR to USB end-to-end pipeline latency
 - [ ] **HDWR-08**: Power budget analysis — per-rail current draw, total power, thermal dissipation per subsystem
-- [ ] **HDWR-09**: GPS/IMU coordinate transform math — quaternion → Euler → target coordinate transformation documentation
+- [ ] **HDWR-09**: GPS/IMU coordinate transform math — quaternion to Euler to target coordinate transformation documentation
 
 ### Software Documentation (SWDOC)
 
@@ -56,8 +56,8 @@
 - [ ] **HWRES-01**: GaN vs SiGe front-end comparison — output power, noise figure, die size at X-band, comparison to current ADTR1107
 - [ ] **HWRES-02**: Frequency synthesizer phase noise improvements — fractional-N PLL advances, ADF4382 vs competing synthesizers, Doppler floor improvement
 - [ ] **HWRES-03**: Antenna-in-Package (AiP) miniaturization — 3D-stacked T/R modules, LTCC implementations, compatibility with ADAR1000+ADTR1107
-- [ ] **HWRES-04**: Higher-resolution ADC options — 14→16-bit upgrade, FPGA interface impact, SNR improvement calculation
-- [ ] **HWRES-05**: Antenna array expansion — 16→32/64 elements, ADAR1000 cascading, PCB constraints, grating lobe implications
+- [ ] **HWRES-04**: Higher-resolution ADC options — 14 to 16-bit upgrade, FPGA interface impact, SNR improvement calculation
+- [ ] **HWRES-05**: Antenna array expansion — 16 to 32/64 elements, ADAR1000 cascading, PCB constraints, grating lobe implications
 - [ ] **HWRES-06**: FPGA upgrade path — Artix UltraScale+ resource comparison, PCB migration complexity, USB 3.0 compatibility
 
 ## v2 Requirements
@@ -128,10 +128,10 @@
 | HWRES-06 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 34 total
-- Mapped to phases: 34
+- v1 requirements: 37 total
+- Mapped to phases: 37
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-13*
-*Last updated: 2026-03-13 after initial definition*
+*Last updated: 2026-03-13 after roadmap creation*
