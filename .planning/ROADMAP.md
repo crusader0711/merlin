@@ -12,7 +12,7 @@ This project produces engineering-grade documentation for the AERIS-10 FMCW phas
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Notation & Parameter Standardization** - Establish project-wide symbol table, master parameter table, and cross-reference conventions before any derivations begin
+- [x] **Phase 1: Notation & Parameter Standardization** - Establish project-wide symbol table, master parameter table, and cross-reference conventions before any derivations begin (completed 2026-03-13)
 - [ ] **Phase 2: Physics Foundation** - Derive FMCW theory, signal models, beamforming, and detection theory from first principles
 - [ ] **Phase 3: Hardware Documentation** - Document all hardware subsystems with component specs, register maps, and analysis
 - [ ] **Phase 4: Software Documentation** - Document FPGA pipeline, STM32 firmware, and Python GUI by signal/data flow
@@ -124,7 +124,7 @@ Phases 1 through 4 execute sequentially. Phases 5 and 6 can execute in parallel 
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Notation & Parameter Standardization | 0/2 | Planning complete | - |
+| 1. Notation & Parameter Standardization | 2/2 | Complete   | 2026-03-13 |
 | 2. Physics Foundation | 0/TBD | Not started | - |
 | 3. Hardware Documentation | 0/TBD | Not started | - |
 | 4. Software Documentation | 0/TBD | Not started | - |
