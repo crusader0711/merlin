@@ -26,8 +26,8 @@
 - [x] **HDWR-01**: System overview with master parameter table — center frequency, bandwidth, PRF, ADC rate, antenna gain, NF, FPGA resources
 - [ ] **HDWR-02**: RF front-end documentation — ADTR1107 LNA/PA, LT5552 mixer, AD9484 ADC with register maps, SPI sequences, key specs (NF, IP3)
 - [ ] **HDWR-03**: Frequency synthesis documentation — ADF4382 synthesizers, AD9523 clock generator, phase noise specifications, lock time
-- [ ] **HDWR-04**: Antenna array & beamforming documentation — ADAR1000 phase shifters, 16-element array geometry, beam steering tables
-- [ ] **HDWR-05**: FPGA board documentation — XC7A100T clock domains (100/120/400 MHz), CDC synchronizers, BUFG usage, LUT/FF/BRAM utilization
+- [x] **HDWR-04**: Antenna array & beamforming documentation — ADAR1000 phase shifters, 16-element array geometry, beam steering tables
+- [x] **HDWR-05**: FPGA board documentation — XC7A100T clock domains (100/120/400 MHz), CDC synchronizers, BUFG usage, LUT/FF/BRAM utilization
 - [ ] **HDWR-06**: Power management documentation — GPIO-controlled rail sequencing, voltage rails, thermal management, fan control
 - [ ] **HDWR-07**: Timing budget & latency analysis — ADC to DDC to CIC to matched filter to FFT to CFAR to USB end-to-end pipeline latency
 - [ ] **HDWR-08**: Power budget analysis — per-rail current draw, total power, thermal dissipation per subsystem
@@ -102,8 +102,8 @@
 | HDWR-01 | Phase 3 | Complete |
 | HDWR-02 | Phase 3 | Pending |
 | HDWR-03 | Phase 3 | Pending |
-| HDWR-04 | Phase 3 | Pending |
-| HDWR-05 | Phase 3 | Pending |
+| HDWR-04 | Phase 3 | Complete |
+| HDWR-05 | Phase 3 | Complete |
 | HDWR-06 | Phase 3 | Pending |
 | HDWR-07 | Phase 3 | Pending |
 | HDWR-08 | Phase 3 | Pending |

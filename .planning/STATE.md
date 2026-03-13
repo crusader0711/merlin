@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-01-PLAN.md (system overview and hardware symbols)
-last_updated: "2026-03-13T23:36:35.572Z"
-last_activity: 2026-03-13 — Completed 02-02-PLAN.md (LFM waveform model and detection theory)
+stopped_at: Completed 03-03-PLAN.md (antenna/beamforming and FPGA board)
+last_updated: "2026-03-13T23:44:44.882Z"
+last_activity: 2026-03-14 — Completed 03-03-PLAN.md (antenna/beamforming and FPGA board)
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 11
-  completed_plans: 7
+  completed_plans: 10
 ---
 
 # Project State
@@ -25,18 +25,18 @@ See: .planning/PROJECT.md (updated 2026-03-13)
 ## Current Position
 
 Phase: 3 of 6 (Hardware Documentation)
-Plan: 1 of 5 in current phase (1 complete)
+Plan: 3 of 5 in current phase (3 complete)
 Status: Executing
-Last activity: 2026-03-14 — Completed 03-01-PLAN.md (system overview and hardware symbols)
+Last activity: 2026-03-14 — Completed 03-03-PLAN.md (antenna/beamforming and FPGA board)
 
-Progress: [██████░░░░] 64%
+Progress: [█████████░] 91%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
+- Total plans completed: 10
 - Average duration: 4 min
-- Total execution time: 0.43 hours
+- Total execution time: 0.60 hours
 
 **By Phase:**
 
@@ -44,7 +44,7 @@ Progress: [██████░░░░] 64%
 |-------|-------|-------|----------|
 | 1 - Notation | 2/2 | 6 min | 3 min |
 | 2 - Physics | 4/4 | 18 min | 4.5 min |
-| 3 - Hardware | 1/5 | 2 min | 2 min |
+| 3 - Hardware | 3/5 | 12 min | 4 min |
 
 **Recent Trend:**
 - Last 5 plans: 02-04 (3 min), 02-03 (5 min), 02-01 (3 min), 02-02 (7 min), 03-01 (2 min)
@@ -81,6 +81,10 @@ Recent decisions affecting current work:
 - [02-04]: CIC filter noise analysis extends chain past ADC with bit growth, passband droop, and truncation noise
 - [02-04]: Representative placeholder values clearly labeled for numerical examples (per research recommendation)
 - [Phase 03]: HW-SYS equation prefix for system overview; 12 hardware symbols in new Section 7 of symbol table
+- [Phase 03]: ADAR1000 beam RAM bypassed; firmware writes phase settings directly via SPI per beam position
+- [Phase 03]: FPGA resource utilization documented as theoretical estimates pending Vivado reports
+- [Phase 03]: FT601 100 MHz clock treated as asynchronous to system 100 MHz (separate oscillator)
+- [Phase 03]: Detailed FPGA signal processing deferred to Phase 4 SWDOC-01; FPGA doc covers structural inventory only
 
 ### Pending Todos
 
@@ -94,6 +98,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T23:36:35.570Z
-Stopped at: Completed 03-01-PLAN.md (system overview and hardware symbols)
+Last session: 2026-03-13T23:44:44.881Z
+Stopped at: Completed 03-03-PLAN.md (antenna/beamforming and FPGA board)
 Resume file: None
