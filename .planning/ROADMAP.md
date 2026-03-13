@@ -13,7 +13,7 @@ This project produces engineering-grade documentation for the AERIS-10 FMCW phas
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Notation & Parameter Standardization** - Establish project-wide symbol table, master parameter table, and cross-reference conventions before any derivations begin (completed 2026-03-13)
-- [x] **Phase 2: Physics Foundation** - Derive FMCW theory, signal models, beamforming, and detection theory from first principles (completed 2026-03-13)
+- [x] **Phase 2: Physics Foundation** - Derive FMCW theory, signal models, beamforming, and detection theory from first principles (completed 2026-03-13)
 - [ ] **Phase 3: Hardware Documentation** - Document all hardware subsystems with component specs, register maps, and analysis
 - [ ] **Phase 4: Software Documentation** - Document FPGA pipeline, STM32 firmware, and Python GUI by signal/data flow
 - [ ] **Phase 5: Software Improvement Research** - Survey target detection, signal processing, and FPGA optimization advances with feasibility assessments
@@ -63,12 +63,14 @@ Plans:
   3. FPGA board documentation covers XC7A100T clock domains (100/120/400 MHz), CDC synchronizers, BUFG usage, and LUT/FF/BRAM utilization
   4. Power management documents GPIO-controlled rail sequencing, voltage rails, thermal management, and fan control; power budget analysis covers per-rail current draw and thermal dissipation per subsystem
   5. End-to-end timing budget traces latency from ADC through DDC, CIC, matched filter, FFT, CFAR to USB output; GPS/IMU coordinate transform math is documented with quaternion-to-Euler-to-target transformations
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
-- [ ] 03-03: TBD
+- [ ] 03-01-PLAN.md — System overview with hardware symbol table additions and subsystem index (HDWR-01)
+- [ ] 03-02-PLAN.md — RF front-end and frequency synthesis documentation (HDWR-02, HDWR-03)
+- [ ] 03-03-PLAN.md — Antenna/beamforming hardware and FPGA board documentation (HDWR-04, HDWR-05)
+- [ ] 03-04-PLAN.md — Power management and power budget analysis (HDWR-06, HDWR-08)
+- [ ] 03-05-PLAN.md — End-to-end timing budget and GPS/IMU coordinate transforms (HDWR-07, HDWR-09)
 
 ### Phase 4: Software Documentation
 **Goal**: Engineers can follow any data path from ADC input through FPGA processing to GUI display without undocumented gaps
@@ -127,7 +129,7 @@ Phases 1 through 4 execute sequentially. Phases 5 and 6 can execute in parallel 
 |-------|----------------|--------|-----------|
 | 1. Notation & Parameter Standardization | 1/2 | Executing | - |
 | 2. Physics Foundation | 4/4 | Complete   | 2026-03-13 |
-| 3. Hardware Documentation | 0/TBD | Not started | - |
+| 3. Hardware Documentation | 0/5 | Not started | - |
 | 4. Software Documentation | 0/TBD | Not started | - |
 | 5. Software Improvement Research | 0/TBD | Not started | - |
 | 6. Hardware Improvement Research | 0/TBD | Not started | - |
