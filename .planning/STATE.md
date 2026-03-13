@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-02-PLAN.md (RF front-end and frequency synthesis)
-last_updated: "2026-03-13T23:45:45.761Z"
+stopped_at: Completed 03-04-PLAN.md (power management and power budget)
+last_updated: "2026-03-13T23:46:10.863Z"
 last_activity: 2026-03-14 — Completed 03-03-PLAN.md (antenna/beamforming and FPGA board)
 progress:
   total_phases: 6
@@ -19,7 +19,7 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 03-03-PLAN.md (antenna/beamforming and FPGA board)
-last_updated: "2026-03-13T23:45:30.640Z"
+last_updated: "2026-03-13T23:45:45.761Z"
 last_activity: 2026-03-14 — Completed 03-03-PLAN.md (antenna/beamforming and FPGA board)
 progress:
   total_phases: 6
@@ -66,7 +66,6 @@ Progress: [█████████░] 91%
 - Trend: steady
 
 *Updated after each plan completion*
-| Phase 03 P02 | 4 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -104,6 +103,8 @@ Recent decisions affecting current work:
 - [Phase 03]: LT5552 mixer NF approximated as reciprocal of conversion loss (standard passive mixer treatment)
 - [Phase 03]: AD9523 clock tree table documents all 14 channels (12 active + 2 disabled) for completeness
 - [Phase 03]: OCXO warm-up (180s) documented as critical startup timing constraint
+- [Phase 03-04]: 17-step power-on sequence documented from firmware main.cpp with exact delays and GPIO pin names
+- [Phase 03-04]: PA bias tuning documented with Idq target 1.680A; power budget uses datasheet typical values (xlsx not text-readable)
 
 ### Pending Todos
 
@@ -117,6 +118,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T23:45:45.759Z
-Stopped at: Completed 03-02-PLAN.md (RF front-end and frequency synthesis)
+Last session: 2026-03-13T23:46:03.395Z
+Stopped at: Completed 03-04-PLAN.md (power management and power budget)
 Resume file: None

@@ -28,9 +28,9 @@
 - [x] **HDWR-03**: Frequency synthesis documentation — ADF4382 synthesizers, AD9523 clock generator, phase noise specifications, lock time
 - [x] **HDWR-04**: Antenna array & beamforming documentation — ADAR1000 phase shifters, 16-element array geometry, beam steering tables
 - [x] **HDWR-05**: FPGA board documentation — XC7A100T clock domains (100/120/400 MHz), CDC synchronizers, BUFG usage, LUT/FF/BRAM utilization
-- [ ] **HDWR-06**: Power management documentation — GPIO-controlled rail sequencing, voltage rails, thermal management, fan control
+- [x] **HDWR-06**: Power management documentation — GPIO-controlled rail sequencing, voltage rails, thermal management, fan control
 - [ ] **HDWR-07**: Timing budget & latency analysis — ADC to DDC to CIC to matched filter to FFT to CFAR to USB end-to-end pipeline latency
-- [ ] **HDWR-08**: Power budget analysis — per-rail current draw, total power, thermal dissipation per subsystem
+- [x] **HDWR-08**: Power budget analysis — per-rail current draw, total power, thermal dissipation per subsystem
 - [ ] **HDWR-09**: GPS/IMU coordinate transform math — quaternion to Euler to target coordinate transformation documentation
 
 ### Software Documentation (SWDOC)
@@ -104,9 +104,9 @@
 | HDWR-03 | Phase 3 | Complete |
 | HDWR-04 | Phase 3 | Complete |
 | HDWR-05 | Phase 3 | Complete |
-| HDWR-06 | Phase 3 | Pending |
+| HDWR-06 | Phase 3 | Complete |
 | HDWR-07 | Phase 3 | Pending |
-| HDWR-08 | Phase 3 | Pending |
+| HDWR-08 | Phase 3 | Complete |
 | HDWR-09 | Phase 3 | Pending |
 | SWDOC-01 | Phase 4 | Pending |
 | SWDOC-02 | Phase 4 | Pending |
