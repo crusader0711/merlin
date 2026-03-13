@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-04-PLAN.md (noise figure chain analysis)
-last_updated: "2026-03-13T22:49:00Z"
-last_activity: 2026-03-13 — Completed 02-04-PLAN.md (noise figure chain analysis)
+stopped_at: Completed 02-03-PLAN.md (beamforming and calibration theory)
+last_updated: "2026-03-13T22:57:27Z"
+last_activity: 2026-03-13 — Completed 02-03-PLAN.md (beamforming and calibration theory)
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 6
-  completed_plans: 3
+  completed_plans: 4
 ---
 
 # Project State
@@ -25,28 +25,28 @@ See: .planning/PROJECT.md (updated 2026-03-13)
 ## Current Position
 
 Phase: 2 of 6 (Physics Foundation)
-Plan: 4 of 4 in current phase
+Plan: 4 of 4 in current phase (all complete)
 Status: Executing
-Last activity: 2026-03-13 — Completed 02-04-PLAN.md (noise figure chain analysis)
+Last activity: 2026-03-13 — Completed 02-03-PLAN.md (beamforming and calibration theory)
 
-Progress: [█████░░░░░] 50%
+Progress: [██████░░░░] 67%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 3 min
-- Total execution time: 0.15 hours
+- Total plans completed: 4
+- Average duration: 3.5 min
+- Total execution time: 0.23 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 - Notation | 1/2 | 3 min | 3 min |
-| 2 - Physics | 1/4 | 3 min | 3 min |
+| 2 - Physics | 2/4 | 8 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (3 min), 02-04 (3 min)
+- Last 5 plans: 01-01 (3 min), 02-04 (3 min), 02-03 (5 min)
 - Trend: steady
 
 *Updated after each plan completion*
@@ -71,6 +71,10 @@ Recent decisions affecting current work:
 - [02-04]: ADC effective noise figure modeled as signal-level-dependent (not fixed) due to 8-bit quantization constraint
 - [02-04]: CIC filter noise analysis extends chain past ADC with bit growth, passband droop, and truncation noise
 - [02-04]: Representative placeholder values clearly labeled for numerical examples (per research recommendation)
+- [02-03]: 19 BF-tagged equations (vs plan's ~15) to avoid skipping intermediate steps, consistent with 02-01 approach
+- [02-03]: ADAR1000 phase quantization modeled as deterministic error with specific sidelobe prediction (~-29 dB for N=16)
+- [02-03]: Grating lobe analysis shows d/lambda < 0.649 is safe for +/-33 deg scan range (30% margin beyond lambda/2)
+- [02-03]: Taylor taper nbar=5 SLL=-30dB as reference design point for beam pattern comparison figures
 
 ### Pending Todos
 
@@ -84,6 +88,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T22:49:00Z
-Stopped at: Completed 02-04-PLAN.md (noise figure chain analysis)
+Last session: 2026-03-13T22:57:27Z
+Stopped at: Completed 02-03-PLAN.md (beamforming and calibration theory)
 Resume file: None

@@ -15,11 +15,11 @@
 
 - [x] **PHYS-01**: FMCW theory — radar equation derivation from first principles, beat frequency, range equation, velocity measurement
 - [ ] **PHYS-02**: LFM waveform model — chirp signal math, time-bandwidth product, pulse compression gain, ambiguity function
-- [ ] **PHYS-03**: Beamforming theory — array factor derivation, phase shift per element for ADAR1000, grating lobe conditions, beam patterns
+- [x] **PHYS-03**: Beamforming theory — array factor derivation, phase shift per element for ADAR1000, grating lobe conditions, beam patterns
 - [ ] **PHYS-04**: Detection theory — CFAR derivation with Neyman-Pearson criterion, false alarm probability, detection probability curves
 - [x] **PHYS-05**: Range-Doppler coupling analysis — full beat frequency with Doppler term, impact on 30us vs 0.5us chirps, compensation approaches
 - [x] **PHYS-06**: Noise figure chain analysis — cascaded NF through LNA (ADTR1107), mixer (LT5552), ADC (AD9484), CIC filter
-- [ ] **PHYS-07**: Antenna array calibration theory — phase/amplitude error correction, ADAR1000 phase quantization effects, inter-element coupling
+- [x] **PHYS-07**: Antenna array calibration theory — phase/amplitude error correction, ADAR1000 phase quantization effects, inter-element coupling
 
 ### Hardware Documentation (HDWR)
 
@@ -94,11 +94,11 @@
 | NOTN-03 | Phase 1 | Complete |
 | PHYS-01 | Phase 2 | Complete |
 | PHYS-02 | Phase 2 | Pending |
-| PHYS-03 | Phase 2 | Pending |
+| PHYS-03 | Phase 2 | Complete |
 | PHYS-04 | Phase 2 | Pending |
 | PHYS-05 | Phase 2 | Complete |
 | PHYS-06 | Phase 2 | Complete |
-| PHYS-07 | Phase 2 | Pending |
+| PHYS-07 | Phase 2 | Complete |
 | HDWR-01 | Phase 3 | Pending |
 | HDWR-02 | Phase 3 | Pending |
 | HDWR-03 | Phase 3 | Pending |
