@@ -27,6 +27,7 @@
 | $T_r$ | Pulse repetition interval (PRI), $T_r = 1/f_r$ | s | pulse repetition interval |
 | $T_{r,1}$ | PRI for long chirp mode | s | -- |
 | $T_{r,2}$ | PRI for short chirp mode | s | -- |
+| $\tau$ | Round-trip delay, $\tau = 2R/c$ | s | -- |
 | $T_\text{guard}$ | Guard time between chirp sequences | s | -- |
 | $M$ | Number of chirps per CPI (per beam position) | -- | -- |
 
@@ -57,6 +58,14 @@
 | $G$ | Antenna gain (combined Tx/Rx unless subscripted) | dBi | antenna gain |
 | $G_t$ | Transmit antenna gain | dBi | -- |
 | $G_r$ | Receive antenna gain | dBi | -- |
+| $k$ | Wavenumber, $k = 2\pi/\lambda$ | rad/m | wavenumber |
+| $\psi$ | Electrical angle, $\psi = kd\sin\theta + \Delta\phi$ | rad | -- |
+| $\theta_0$ | Beam steering angle (desired) | rad or deg | scan angle |
+| $\theta_{3\text{dB}}$ | Half-power beamwidth | rad or deg | beamwidth |
+| $w_n$ | Amplitude weight for array element $n$ (dimensionless). Applying a window function $w[n]$ to the array is equivalent to amplitude tapering with weights $w_n = w[n]$. | -- | -- |
+| $a_n$ | Nominal amplitude weight for element $n$ | -- | -- |
+| $\delta\phi_n$ | Phase error for element $n$ | rad | -- |
+| $\delta a_n$ | Amplitude error for element $n$ | -- | -- |
 | $AF(\theta)$ | Array factor as function of angle | -- | array factor |
 
 ## 4. Detection and Signal
@@ -74,6 +83,11 @@
 | $P_{fa}$ | Probability of false alarm | -- | false alarm probability |
 | $P_d$ | Probability of detection | -- | detection probability |
 | $\text{SNR}$ | Signal-to-noise ratio | dB | signal-to-noise ratio |
+| $\alpha$ | CFAR threshold multiplier | -- | -- |
+| $N_\text{ref}$ | Number of CFAR reference cells, total | -- | -- |
+| $N_\text{guard}$ | Number of CFAR guard cells, total | -- | -- |
+| $T_e$ | Equivalent noise temperature | K | noise temperature |
+| $B_n$ | Noise bandwidth | Hz | noise bandwidth |
 | $\text{SNR}_\text{min}$ | Minimum detectable SNR | dB | -- |
 
 ## 5. Signal Processing
@@ -88,6 +102,7 @@
 | $N_\text{CIC}$ | CIC filter stages | -- | -- |
 | $D_\text{CIC}$ | CIC decimation factor | -- | -- |
 | $w[n]$ | Window function (discrete) | -- | -- |
+| $\chi(\tau, \nu)$ | Ambiguity function | -- | -- |
 
 ## 6. Physical Constants
 
