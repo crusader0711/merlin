@@ -640,7 +640,197 @@ The Extended variant's slotted waveguide antenna is structurally incompatible wi
 
 ## 4. Higher-Resolution ADC Options
 
-*To be completed in Plan 06-03.*
+*Requirement: HWRES-04*
+
+### 4.1 Current State
+
+The AERIS-10 digitizes the IF signal using the **AD9484** (Analog Devices), an **8-bit** 500 MSPS ADC operated at $f_s = 400~\text{MSPS}$. The 8-bit resolution is confirmed by two independent sources:
+
+- **Hardware documentation:** [`02_rf_frontend.md`](../02_hardware/02_rf_frontend.md#ad9484-adc) Section 4 explicitly states "8-bit" with a pitfall reminder
+- **FPGA source code:** `ADC_WIDTH = 8` in `ddc_400m.v` (the DDC module that receives ADC samples)
+
+> **Pitfall 1 (from research): ADC Bit Width Confusion.** The AD9484 is frequently cited as "14-bit" in casual references. The AERIS-10 uses it as an **8-bit** ADC at 400 MSPS. All improvement calculations in this section use the 8-bit baseline. If an "improvement" from 14-to-16-bit shows only 12 dB gain, the wrong baseline has been used. The actual improvement from 8-to-14-bit is **36 dB of SQNR**.
+
+| Parameter | Symbol | Value | Source |
+|-----------|--------|-------|--------|
+| Resolution | $b$ | 8 bits | [`02_rf_frontend.md`](../02_hardware/02_rf_frontend.md#ad9484-adc) Section 4; `ddc_400m.v` `ADC_WIDTH = 8` |
+| Maximum sample rate | -- | 500 MSPS | AD9484 datasheet |
+| Operating sample rate | $f_s$ | 400 MSPS | AD9523 OUT4/OUT5 clock; [`05_fpga_board.md`](../02_hardware/05_fpga_board.md#400-mhz-adc-domain) Eq. (HW-FPGA-1) |
+| ENOB | -- | ~7.5 bits typical | AD9484 datasheet at Nyquist input |
+| Theoretical SQNR | -- | 49.9 dB | Eq. (NF-11) with $b = 8$ |
+| SFDR | -- | ~48 dBFS typical | AD9484 datasheet at Nyquist input |
+| Interface | -- | 8-bit parallel LVDS DDR | [`02_rf_frontend.md`](../02_hardware/02_rf_frontend.md#lvds-interface) Section 4.3 |
+| FPGA interface module | -- | `ad9484_interface_400m.v` | IBUFDS + IDDR primitives; [`05_fpga_board.md`](../02_hardware/05_fpga_board.md#fpga-module-inventory) Section 5 |
+
+The theoretical SQNR for the 8-bit AD9484 follows from Eq. (NF-11) in [`05_noise_analysis.md`](../01_physics/05_noise_analysis.md#signal-to-quantization-noise-ratio):
+
+$$
+\text{SQNR}_\text{dB} = 6.02 \, b + 1.76~\text{dB} \tag{NF-11}
+$$
+
+For $b = 8$: $\text{SQNR} = 6.02 \times 8 + 1.76 = 49.9~\text{dB}$. This quantization noise floor at $-49.9~\text{dBFS}$ is documented as a "dominant constraint" on the AERIS-10 digital noise floor in both [`02_rf_frontend.md`](../02_hardware/02_rf_frontend.md#dynamic-range) Section 4.4 and [`05_noise_analysis.md`](../01_physics/05_noise_analysis.md#signal-to-quantization-noise-ratio) Section 5.2.
+
+The ADC's effective noise figure $F_\text{ADC}$ is signal-level-dependent per Eq. (NF-12) in [`05_noise_analysis.md`](../01_physics/05_noise_analysis.md#effective-noise-figure-of-the-adc):
+
+$$
+F_\text{ADC} = 1 + \frac{\sigma_q^2}{k_B T_0 B_n G_\text{chain}} \tag{NF-12}
+$$
+
+where $G_\text{chain} = G_\text{LNA} \, G_\text{mix} \, G_\text{IF}$ is the total analog chain gain preceding the ADC. When $G_\text{chain}$ is insufficient to raise thermal noise above the quantization floor, $F_\text{ADC}$ becomes large and dominates the system noise figure.
+
+### 4.2 Literature Survey
+
+#### Candidate ADC Comparison
+
+| Parameter | AD9484 (current) | AD9680 | AD9208 |
+|-----------|-------------------|--------|--------|
+| Resolution | 8 bits | **14 bits** | **14 bits** |
+| Sample rate | 500 MSPS (rated) | 500 MSPS / 1 GSPS | 3 GSPS |
+| SNR | ~48 dBFS | 65.3 dBFS | ~65 dBFS |
+| ENOB | ~7.5 bits | 10.8 bits | ~10.5 bits |
+| SFDR | ~48 dBFS | 82 dBFS | ~80 dBFS |
+| Noise density | -- | $-154~\text{dBFS/Hz}$ | Similar |
+| Interface | **LVDS parallel (8-bit DDR)** | **JESD204B** | **JESD204B** |
+| JESD204B lanes | N/A | Up to 4 lanes per channel | Up to 8 lanes per channel |
+| Channels | Single | Dual | Dual |
+| Power consumption | ~0.5 W | ~1.5 W | ~2.5 W |
+| Package | 32-lead LFCSP | 64-lead LFCSP | 196-ball BGA |
+
+**Critical observation:** The AD9680 and AD9208 use **JESD204B serial interfaces**, NOT parallel LVDS. This is a fundamental interface change with major FPGA implications (see Section 4.4 below and Section 6 for the coupled FPGA upgrade analysis).
+
+#### AD9680 as Primary Candidate
+
+The AD9680 is the most suitable upgrade candidate for the AERIS-10:
+
+- **500 MSPS per channel** at 14-bit resolution matches the current 400 MSPS operating rate
+- **Dual channel** allows potential future dual-receiver architectures (e.g., sum/difference beamforming)
+- **65.3 dBFS SNR** represents a substantial improvement over the AD9484's ~48 dBFS
+- **JESD204B interface** at up to 10 Gbps per lane supports the full 14-bit data rate
+- **Widely adopted** in radar and communications systems, with mature Xilinx IP support for JESD204B PHY
+
+#### AD9208 as Future Option
+
+The AD9208 targets higher-bandwidth applications (3 GSPS) and is relevant only if the AERIS-10 migrates to direct RF sampling (eliminating the mixer stage). At the current IF-based architecture with $f_s = 400~\text{MSPS}$, the AD9208 is significantly over-specified.
+
+#### Academic and Datasheet References
+
+- Analog Devices, "AD9680 Datasheet," 14-bit, 500 MSPS / 1 GSPS JESD204B dual ADC -- primary specification source
+- Analog Devices, "AD9208 Datasheet," 14-bit, 3 GSPS JESD204B dual ADC -- future option reference
+- Xilinx/AMD, "JESD204B Interface for UltraScale+ FPGAs," User Guide UG578 -- FPGA-side JESD204B implementation
+- W. Kester, *The Data Conversion Handbook*, Analog Devices / Newnes, 2005, Chapter 3 -- ADC noise analysis and SQNR derivation
+
+### 4.3 Gap Analysis
+
+#### SQNR Improvement Calculation
+
+Using Eq. (NF-11) to compute the SQNR improvement from higher-resolution ADCs:
+
+$$
+\Delta\text{SQNR} = 6.02 \times (b_\text{new} - b_\text{current})~\text{dB} \tag{HW-IMP-15}
+$$
+
+| ADC Resolution | $b$ | SQNR (Eq. NF-11) | $\Delta$SQNR vs 8-bit | Assessment |
+|----------------|-----|-------------------|----------------------|------------|
+| AD9484 (current) | 8 | 49.9 dB | 0 dB | Baseline |
+| 14-bit (AD9680) | 14 | 86.0 dB | **+36.1 dB** | Primary candidate |
+| 16-bit (hypothetical) | 16 | 98.1 dB | **+48.2 dB** | Future reference |
+
+**This is the single largest potential improvement in the entire AERIS-10 system.** The 36.1 dB SQNR improvement from an 8-to-14-bit upgrade exceeds the impact of all other HWRES improvements combined:
+
+- GaN PA upgrade (HWRES-01): +8--15 dB transmit power
+- Array expansion (HWRES-05): +3--6 dB array gain
+- Synthesizer improvement (HWRES-02): negligible (already best-in-class)
+- AiP miniaturization (HWRES-03): ~0.5 dB interconnect loss reduction
+
+#### Quantization Floor Impact on Doppler Detection
+
+The connection between ADC resolution and Doppler detection was established in Section 2. The phase noise analysis showed SPNR values of 170+ dB at relevant Doppler offsets, while the 8-bit ADC quantization floor sits at only ~50 dB. The ADC quantization noise is the dominant limitation on Doppler detection sensitivity, exceeding the phase noise floor by more than **120 dB**.
+
+A 14-bit ADC would lower the quantization floor to $-86~\text{dBFS}$, which remains well above the thermal noise floor for most operating conditions. This means the 36.1 dB improvement in quantization floor translates to a genuine 36.1 dB improvement in dynamic range, not merely a theoretical advantage masked by other noise sources.
+
+#### Critical Caveat: Analog Chain Gain Requirement (Eq. NF-12)
+
+The full SQNR improvement is realized **only if the analog chain gain $G_\text{chain}$ is sufficient to keep thermal noise above the new (much lower) quantization floor**. Per Eq. (NF-12) in [`05_noise_analysis.md`](../01_physics/05_noise_analysis.md#effective-noise-figure-of-the-adc):
+
+$$
+F_\text{ADC} = 1 + \frac{\sigma_q^2}{k_B T_0 B_n G_\text{chain}}
+$$
+
+For the ADC noise figure to approach unity (quantization noise negligible), the thermal noise at the ADC input must dominate:
+
+$$
+k_B T_0 B_n G_\text{chain} \gg \sigma_q^2 \tag{HW-IMP-16}
+$$
+
+With a 14-bit ADC, $\sigma_q^2$ decreases by a factor of $2^{2(14-8)} = 4096$ (36 dB) compared to the 8-bit ADC. This dramatically relaxes the gain requirement -- the analog chain gain that was previously just sufficient to keep thermal noise above the 8-bit quantization floor now provides 36 dB of margin above the 14-bit floor.
+
+However, a higher-resolution ADC also **exposes the analog chain noise that was previously masked by quantization**. If the analog chain has gain/noise characteristics that produce a noise floor between $-50~\text{dBFS}$ and $-86~\text{dBFS}$, a 14-bit ADC will faithfully digitize this noise rather than hiding it in the quantization floor. This is not a disadvantage -- it reveals the true analog chain performance and enables the system to benefit from future analog chain improvements.
+
+> **Warning sign from research (Pitfall 1):** If someone claims the "improvement" from a 14-to-16-bit upgrade is 12 dB, they have used the wrong baseline. Starting from the actual 8-bit AD9484, the improvement is 36.1 dB (8-to-14-bit) or 48.2 dB (8-to-16-bit). The 12 dB figure would only be correct if the current ADC were already 14-bit, which it is not.
+
+### 4.4 Feasibility Assessment
+
+#### Interface Change: JESD204B (Pitfall 2)
+
+This is the critical constraint that couples HWRES-04 to HWRES-06 (FPGA upgrade).
+
+**Current interface:** The AD9484 uses an 8-bit parallel LVDS DDR interface, captured by the FPGA via `IBUFDS` + `IDDR` primitives in `ad9484_interface_400m.v` (documented in [`02_rf_frontend.md`](../02_hardware/02_rf_frontend.md#lvds-interface) Section 4.3 and [`05_fpga_board.md`](../02_hardware/05_fpga_board.md#fpga-module-inventory) Section 5).
+
+**Required interface:** The AD9680 uses JESD204B serial interface requiring high-speed serial transceivers (GTH or GTY) on the FPGA.
+
+**Artix-7 XC7A100T transceiver status:** The XC7A100T has **zero** GTH or GTY transceivers (confirmed in [`05_fpga_board.md`](../02_hardware/05_fpga_board.md#device-resources) Section 2.1 resource table). The FPGA **cannot natively support JESD204B**.
+
+> **HWRES-04 (ADC upgrade) is DEPENDENT on HWRES-06 (FPGA upgrade).** The ADC cannot be upgraded to a 14-bit JESD204B device without simultaneously upgrading the FPGA to a device with GTH/GTY transceivers. See Section 6 for the FPGA upgrade analysis.
+
+**Alternative: LVDS-interfaced high-resolution ADCs.** A few ADCs offer higher resolution with parallel LVDS interfaces (e.g., AD9265, 16-bit, 125 MSPS), but these do not meet the 400 MSPS sample rate requirement. At 400+ MSPS with 14-bit resolution, JESD204B is the industry-standard interface. No commercially available 14-bit, 400+ MSPS ADC offers a parallel LVDS interface.
+
+#### Firmware and FPGA Impact
+
+If the FPGA is upgraded to support JESD204B (see Section 6):
+
+| Component | Current (AD9484) | Upgraded (AD9680) | Change Scope |
+|-----------|------------------|-------------------|--------------|
+| ADC interface module | `ad9484_interface_400m.v` (IBUFDS + IDDR) | JESD204B PHY + link layer IP | **Complete rewrite** |
+| Data width | 8-bit | 14-bit | Entire pipeline width change |
+| DDC module | `ddc_400m.v` (`ADC_WIDTH = 8`) | `ADC_WIDTH = 14` | Parameter change + multiplier resizing |
+| CIC decimator | 8-bit input, 18-bit output (Eq. NF-15) | 14-bit input, 24-bit output | Wider accumulators |
+| Matched filter | 18-bit data path | 24-bit data path | Wider multipliers, more BRAM |
+| Doppler processor | 16-bit I/Q | 24-bit I/Q | Wider FFT butterfly |
+| BRAM usage | ~101 BRAMs (current estimate) | Higher (wider data paths) | Increased utilization |
+| DSP usage | ~88 DSPs (current estimate) | Higher (wider multipliers) | Increased utilization |
+
+The pipeline data width change from 8-bit to 14-bit input propagates through all processing stages, increasing resource utilization. This is another reason the FPGA upgrade (HWRES-06) is required -- not only for JESD204B transceivers but also for the additional LUT, DSP, and BRAM resources needed for wider data paths.
+
+#### Analog Chain Re-optimization
+
+A 14-bit ADC with $-86~\text{dBFS}$ quantization floor will reveal analog chain imperfections (spurs, intermodulation products, thermal noise) that were previously hidden by the $-50~\text{dBFS}$ quantization floor of the 8-bit ADC. This may require:
+
+- Anti-aliasing filter redesign (sharper transition band, lower passband ripple)
+- IF amplifier gain optimization to position the thermal noise floor optimally within the ADC's dynamic range
+- LO isolation improvement if synthesizer spurs fall within the ADC's expanded dynamic range
+- PCB layout optimization to reduce coupling from digital noise into the analog signal path
+
+These are standard engineering tasks for ADC upgrade projects, not fundamental obstacles.
+
+### 4.5 Recommendations
+
+**Priority ranking:** **HIGHEST** when combined with HWRES-06 (FPGA upgrade). The ADC upgrade cannot be pursued independently due to the JESD204B interface dependency.
+
+**Key findings:**
+
+1. The 8-to-14-bit ADC upgrade provides **36.1 dB SQNR improvement** -- the single largest potential improvement in the AERIS-10 system
+2. The ADC quantization floor ($-49.9~\text{dBFS}$) is the dominant noise limitation, exceeding the phase noise floor by 120+ dB (Section 2 analysis)
+3. The AD9680 (14-bit, 500 MSPS, JESD204B) is the primary candidate, with mature Xilinx JESD204B IP support
+4. **CRITICAL: HWRES-04 depends on HWRES-06** -- the Artix-7 XC7A100T lacks the GTH transceivers required for JESD204B (Pitfall 2). ADC and FPGA must be upgraded as a **paired upgrade**
+5. The wider data path (14-bit vs 8-bit) increases FPGA resource utilization, further necessitating the FPGA upgrade
+
+**Recommended investigation steps (not implementation specifications):**
+
+1. **Evaluate AD9680 + AU15P as a paired upgrade path** -- confirm JESD204B lane rate compatibility, verify Xilinx JESD204B PHY IP configuration for 14-bit, 400 MSPS operation
+2. **Prototype on Opal Kelly XEM8305** (AU15P development board) with AD9680 evaluation board connected via FMC -- validate JESD204B link establishment and data integrity
+3. **Characterize the analog chain noise floor** at the ADC input to determine the actual dynamic range improvement (vs theoretical 36.1 dB) -- if analog chain noise exceeds $-86~\text{dBFS}$, the realized improvement is less than the theoretical maximum
+4. **Estimate updated FPGA resource utilization** with 14-bit data paths through the entire signal processing pipeline -- verify AU15P resources are sufficient or AU25P is required
+5. **Assess IF amplifier gain requirements** -- ensure the analog chain gain positions the thermal noise floor optimally within the AD9680's 86 dB dynamic range
 
 ---
 
@@ -832,7 +1022,202 @@ The power management subsystem (documented in [`06_power_management.md`](../02_h
 
 ## 6. FPGA Upgrade Path
 
-*To be completed in Plan 06-03.*
+*Requirement: HWRES-06*
+
+### 6.1 Current State
+
+The AERIS-10 digital processing platform is the **Xilinx Artix-7 XC7A100T** FPGA (28 nm process), documented in [`05_fpga_board.md`](../02_hardware/05_fpga_board.md). The device resources from [`05_fpga_board.md`](../02_hardware/05_fpga_board.md#device-resources) Section 2.1:
+
+| Resource | Available | Symbol | Source |
+|----------|-----------|--------|--------|
+| Look-Up Tables (LUTs) | 63,400 | $N_\text{LUT}$ | [`05_fpga_board.md`](../02_hardware/05_fpga_board.md#device-resources) Table 2.1 |
+| Flip-Flops (FFs) | 126,800 | $N_\text{FF}$ | [`05_fpga_board.md`](../02_hardware/05_fpga_board.md#device-resources) Table 2.1 |
+| Block RAM (36 Kb each) | 135 | $N_\text{BRAM}$ | [`05_fpga_board.md`](../02_hardware/05_fpga_board.md#device-resources) Table 2.1 |
+| DSP48E1 Slices | 240 | $N_\text{DSP}$ | [`05_fpga_board.md`](../02_hardware/05_fpga_board.md#device-resources) Table 2.1 |
+| GTH/GTY Transceivers | **0** | -- | XC7A100T datasheet |
+| Global Clock Buffers (BUFG) | 32 | -- | [`05_fpga_board.md`](../02_hardware/05_fpga_board.md#device-resources) Table 2.1 |
+| MMCM/PLL (CMTs) | 6 | -- | [`05_fpga_board.md`](../02_hardware/05_fpga_board.md#device-resources) Table 2.1 |
+| Process node | 28 nm | -- | Artix-7 DS181 |
+
+**Estimated resource utilization** from [`05_fpga_board.md`](../02_hardware/05_fpga_board.md#resource-utilization) Section 2.2 (theoretical estimates pending Vivado reports -- Open Question 3 from research):
+
+| Resource | Estimated Used | Available | Utilization |
+|----------|---------------|-----------|-------------|
+| LUTs | ~16,500 | 63,400 | ~26% |
+| DSP48E1 | ~88 | 240 | ~37% |
+| BRAMs | ~101 | 135 | **~75%** |
+
+> BRAM utilization is the most likely bottleneck due to FFT twiddle factor storage and chirp reference memories, as noted in [`05_fpga_board.md`](../02_hardware/05_fpga_board.md#resource-utilization) Section 2.2.
+
+**Clock domains** from [`05_fpga_board.md`](../02_hardware/05_fpga_board.md#clock-domains) Section 3:
+
+| Domain | Frequency | Source | Key Modules |
+|--------|-----------|--------|-------------|
+| ADC | 400 MHz | AD9523 OUT4/5 (LVDS) | ADC interface, DDC front-end |
+| DAC | 120 MHz | AD9523 OUT10/11 (LVCMOS) | Chirp TX, DAC interface |
+| System | 100 MHz | AD9523 OUT6 (LVCMOS) | CIC, matched filter, FFT, Doppler |
+| FT601 | 100 MHz | FT601 IC (external) | USB data, packet analyzer |
+
+The critical architectural limitation is the **absence of high-speed serial transceivers** (GTH/GTY). The XC7A100T is a fabric-only FPGA with no multi-gigabit serial I/O capability, which prevents native support for JESD204B (required by all modern 14-bit, 400+ MSPS ADCs) and other high-speed serial protocols.
+
+### 6.2 Literature Survey
+
+#### Artix UltraScale+ Resource Comparison
+
+| Resource | XC7A100T (current) | AU10P | AU15P | AU25P |
+|----------|-------------------|-------|-------|-------|
+| System Logic Cells | 101,440 | 96,250 | 170,100 | 308,437 |
+| CLB LUTs | 63,400 | **44,000** | 77,760 | 141,000 |
+| CLB Flip-Flops | 126,800 | 88,000 | 155,520 | 282,000 |
+| Block RAM (36 Kb) | 135 | 100 | 144 | 300 |
+| DSP Slices | 240 (DSP48E1) | 400 (DSP48E2) | 576 (DSP48E2) | 1,200 (DSP48E2) |
+| Transceivers | **0** | **12 GTH** | **12 GTH** | **12 GTY** |
+| CMTs | 6 | 3 | 3 | 4 |
+| Max transceiver rate | N/A | 12.5 Gbps (GTH) | 12.5 Gbps (GTH) | 16.3 Gbps (GTY) |
+| Process node | 28 nm | 16 nm | 16 nm | 16 nm |
+| Core voltage | 1.0 V | 0.85 V | 0.85 V | 0.85 V |
+
+Source: AMD/Xilinx Artix-7 DS181 and Artix UltraScale+ product selection guide.
+
+**Critical observations:**
+
+1. **AU10P has FEWER LUTs than XC7A100T** (44,000 vs 63,400). Despite being marketed as the "entry" Artix UltraScale+, the AU10P would reduce LUT headroom. It is **NOT a viable migration target** for the AERIS-10 unless the design can be significantly optimized to fit in fewer LUTs.
+
+2. **AU15P is the minimum viable upgrade:** 77,760 LUTs (22% more than XC7A100T), 576 DSP slices (2.4x), 144 BRAMs (slightly more), and -- critically -- **12 GTH transceivers** enabling JESD204B for the ADC upgrade (HWRES-04).
+
+3. **AU25P is the future-proof option:** 141,000 LUTs (2.2x), 1,200 DSPs (5x), 300 BRAMs (2.2x), and **GTY transceivers** at 16.3 Gbps. This provides substantial headroom for:
+   - 14-bit ADC data paths (wider multipliers, deeper buffers)
+   - Phase 5 software improvements: larger FFTs, more complex matched filters, potential ML inference (per research in `research/01_sw_algorithm_improvements.md` and `research/02_sw_pipeline_improvements.md`)
+   - Array expansion (HWRES-05): more SPI controller instances for multi-bus operation
+
+4. **DSP48E2 vs DSP48E1:** UltraScale+ DSP slices feature **27x18 multipliers** (vs 25x18 for Artix-7 DSP48E1), providing wider multiply operations. For a 14-bit ADC data path, the 27-bit input accommodates 24-bit processed data (14-bit ADC + CIC bit growth per Eq. NF-15) without requiring multi-DSP cascading.
+
+5. **FT601 USB 3.0 compatibility:** The FT601's 32-bit FIFO interface operates at 100 MHz with LVCMOS33 I/O standard. Artix UltraScale+ HP (High-Performance) I/O banks support LVCMOS33, confirming compatibility. The **Opal Kelly XEM8305** development board demonstrates FT601 + AU15P integration, providing independent verification of this compatibility.
+
+#### DSP Slice Architecture Comparison
+
+| Feature | DSP48E1 (Artix-7) | DSP48E2 (UltraScale+) |
+|---------|-------------------|-----------------------|
+| Pre-adder | 25-bit | **27-bit** |
+| Multiplier | 25 x 18 | **27 x 18** |
+| Accumulator | 48-bit | 48-bit |
+| Pre-adder mode | Add only | Add/subtract |
+| Wide XOR | No | Yes (96-bit) |
+| Cascade | 48-bit PCOUT | 48-bit PCOUT |
+
+The wider pre-adder and multiplier in DSP48E2 directly benefit the signal processing pipeline when moving from 8-bit to 14-bit ADC data, as the intermediate products grow wider through the processing chain.
+
+### 6.3 Gap Analysis
+
+#### What the Current FPGA Cannot Do
+
+1. **Support any ADC with JESD204B interface** -- zero transceivers means no high-speed serial interface. This directly blocks HWRES-04 (ADC upgrade), the single highest-impact improvement identified in this document.
+
+2. **Run multiple FFT pipelines simultaneously** -- the current BRAM utilization of ~75% leaves insufficient room for parallel processing paths. A second 1024-point FFT requires approximately 20 additional BRAMs, exceeding the 34-BRAM remaining headroom.
+
+3. **Support wider data paths** -- a 14-bit ADC with CIC bit growth produces 24-bit outputs (Eq. NF-15 with $b_\text{in} = 14$: $b_\text{out} = 14 + 5 \times 2 = 24~\text{bits}$). The wider data paths require more DSP slices for each multiply-accumulate operation and more BRAMs for each buffer.
+
+4. **Implement advanced algorithms** -- Phase 5 software improvement research identified several high-impact algorithms (CFAR variants, Kalman filtering, MVDR beamforming) that are resource-limited on the current platform (per `research/02_sw_pipeline_improvements.md`).
+
+#### What FPGA Upgrade Enables
+
+1. **GTH/GTY transceivers unlock JESD204B** -- the key enabler for HWRES-04 (ADC upgrade). With 12 GTH lanes on AU15P, the FPGA can support multiple JESD204B links simultaneously.
+
+2. **More DSP slices enable advanced processing:**
+   - AU15P (576 DSPs): 2.4x current capacity -- supports 14-bit data paths, larger matched filters
+   - AU25P (1,200 DSPs): 5x current capacity -- supports simultaneous FFT/CFAR processing, potential ML inference on processed data
+
+3. **More BRAMs enable deeper buffers:**
+   - AU15P (144 BRAMs): slight increase, adequate for 14-bit upgrade
+   - AU25P (300 BRAMs): 2.2x current capacity -- enables larger range/Doppler maps, longer CPI integration, multi-bank interleaving
+
+4. **16 nm process advantages:** Lower power consumption per logic cell, higher maximum clock frequencies, and UltraRAM (AU25P only) for large on-chip memory.
+
+### 6.4 Feasibility Assessment
+
+#### PCB Migration Complexity: HIGH (Pitfall 5)
+
+> **Pitfall 5 (from research): FPGA Upgrade Without Clock Domain Migration Analysis.** If this analysis describes the FPGA upgrade as "straightforward" or "drop-in," the hardware integration has not been considered. The FPGA upgrade implies a new PCB, new constraint file, re-verified clock tree, and potentially new AD9523 clock outputs for JESD204B reference clocks.
+
+The migration from Artix-7 to Artix UltraScale+ is **NOT a drop-in upgrade**. The following subsystems must be redesigned:
+
+| Subsystem | Migration Impact | Effort |
+|-----------|-----------------|--------|
+| **PCB layout** | Different BGA package, different pin assignments, different I/O bank arrangement | Full PCB redesign |
+| **Power management** | Core voltage changes from 1.0 V (Artix-7) to 0.85 V (UltraScale+); additional voltage rails for GTH transceivers (MGTAVCC 1.0V, MGTAVTT 1.2V) | New power tree design |
+| **Constraint file** | Different BUFG architecture, different I/O standards for HP banks, new transceiver pin locations | Complete `.xdc` rewrite |
+| **Clock tree** | Different MMCM/PLL architecture; JESD204B requires dedicated reference clocks (typically 125 MHz or device clock) from AD9523 | AD9523 reconfiguration, potential new clock outputs |
+| **Configuration** | Different bitstream format, different JTAG chain, different SPI flash requirements | New configuration circuit |
+| **I/O standards** | UltraScale+ HP I/O banks support different voltage levels; current LVCMOS33 interfaces must be mapped to compatible banks | I/O planning redesign |
+
+**Voltage rail differences:**
+
+| Rail | Artix-7 XC7A100T | UltraScale+ AU15P/AU25P |
+|------|-------------------|-------------------------|
+| Core (VCCINT) | 1.0 V | 0.85 V |
+| Auxiliary (VCCAUX) | 1.8 V | 1.8 V |
+| Block RAM (VCCBRAM) | 1.0 V | 0.85 V |
+| I/O (VCCO) | 1.8 / 2.5 / 3.3 V (bank-dependent) | 1.0 -- 3.3 V (HP/HD banks) |
+| GTH analog (MGTAVCC) | N/A | 1.0 V |
+| GTH termination (MGTAVTT) | N/A | 1.2 V |
+
+The GTH transceiver power rails (MGTAVCC, MGTAVTT) are new requirements that do not exist on the current Artix-7 board.
+
+#### Clock Tree Redesign
+
+The current AD9523 clock tree (documented in [`03_frequency_synthesis.md`](../02_hardware/03_frequency_synthesis.md#complete-clock-tree-table)) uses 12 of 14 available output channels. For JESD204B operation, additional clocks are needed:
+
+- **Device clock** for JESD204B link: typically the ADC sample clock (400 MHz), already available from AD9523 OUT4/OUT5
+- **Reference clock** for GTH transceiver PLL: may require a dedicated AD9523 output or a recovered clock from the JESD204B link
+- **SYSREF clock** for JESD204B deterministic latency: requires a new low-frequency clock output (typically sample clock / N) from AD9523
+
+The AD9523 has 2 unused outputs (OUT8, OUT12) that could potentially serve these roles, but the divider ratios and output formats must be verified against JESD204B timing requirements.
+
+#### FT601 USB 3.0 Compatibility
+
+The FT601 FIFO interface is architecture-agnostic:
+
+| Parameter | Current (Artix-7) | Upgraded (AU15P/AU25P) | Compatibility |
+|-----------|-------------------|------------------------|---------------|
+| Data bus width | 32-bit | 32-bit | Compatible |
+| Clock | 100 MHz (external) | 100 MHz (external) | Compatible |
+| I/O standard | LVCMOS33 | LVCMOS33 (HD I/O bank) | Compatible |
+| Interface protocol | FIFO read/write | FIFO read/write | Compatible |
+
+The Opal Kelly XEM8305 (AU15P + FT601) confirms this compatibility in a production development board.
+
+#### Firmware (Verilog) Migration
+
+| Module Category | Migration Effort | Notes |
+|-----------------|-----------------|-------|
+| Processing pipeline (CIC, FFT, matched filter, Doppler) | **MODERATE** -- synthesizable RTL, mostly portable | May need DSP48E2 instantiation changes; parameterized designs adapt with updated constraints |
+| ADC interface (`ad9484_interface_400m.v`) | **COMPLETE REWRITE** -- replaced by JESD204B PHY + link layer | New module using Xilinx JESD204B IP core |
+| CDC modules (`cdc_modules.v`) | **LOW** -- standard synchronizer patterns are portable | Verify MTBF calculation (Eq. HW-FPGA-4) at UltraScale+ timing characteristics |
+| USB interface (`usb_data_interface.v`) | **LOW** -- FIFO interface is architecture-independent | Verify timing constraints against AU15P I/O timing |
+| Clock infrastructure (BUFGs, MMCMs) | **MODERATE** -- different buffer primitives | Replace `BUFG` instantiations with UltraScale+ equivalents (`BUFGCE`, `BUFGCTRL`) |
+| Constraint file (`cntrt.xdc`) | **COMPLETE REWRITE** -- different pin assignments, I/O banks, timing models | New `.xdc` required for the target AU15P/AU25P package |
+
+### 6.5 Recommendations
+
+**Priority ranking:** **HIGH** -- the FPGA upgrade enables the highest-impact improvement in the system (HWRES-04, ADC upgrade with 36 dB SQNR improvement). Without the FPGA upgrade, the ADC cannot be changed.
+
+**Key findings:**
+
+1. **AU15P is the recommended minimum migration target:** 22% more LUTs than XC7A100T, 2.4x DSPs, comparable BRAMs, and -- critically -- **12 GTH transceivers** enabling JESD204B for HWRES-04
+2. **AU25P is recommended if Phase 5 software improvements require significant additional resources:** 2.2x LUTs, 5x DSPs, 2.2x BRAMs provide substantial headroom for advanced processing
+3. **AU10P is NOT viable** -- fewer LUTs (44K vs 63K) than the current XC7A100T, despite having GTH transceivers
+4. **PCB migration complexity is HIGH** (Pitfall 5) -- different package, voltage rails, I/O banks, and configuration. This is NOT a drop-in upgrade; the entire board must be redesigned
+5. **HWRES-06 should be paired with HWRES-04** for maximum system improvement -- upgrading the FPGA without upgrading the ADC wastes the GTH transceivers; upgrading the ADC is impossible without the FPGA upgrade
+6. **Prototype before custom PCB** -- the Opal Kelly XEM8305 (AU15P + FT601) provides a validated development platform for JESD204B evaluation before committing to a custom board design
+
+**Recommended investigation steps (not implementation specifications):**
+
+1. **Prototype with Opal Kelly XEM8305** -- port the current signal processing pipeline to AU15P, verify functionality with the existing AD9484 (via LVDS), then connect AD9680 evaluation board via FMC for JESD204B validation
+2. **Estimate AU15P resource utilization** -- resynthesize the current design for AU15P to establish actual (not theoretical) resource baseline, then estimate the additional resources for 14-bit data paths
+3. **Evaluate AD9523 clock tree reconfiguration** -- determine JESD204B reference clock and SYSREF requirements, verify that OUT8 and OUT12 (currently unused) can serve these roles
+4. **Assess AU15P vs AU25P** -- if estimated AU15P utilization with 14-bit data paths exceeds 70%, recommend AU25P for design margin
+5. **Power budget analysis** -- estimate total power for AU15P/AU25P including GTH transceivers; verify compatibility with existing power supply architecture or identify required changes
+6. **Clock tree verification** -- confirm that the existing 100/120/400 MHz clock domains can be reproduced on UltraScale+ with equivalent or better jitter performance
 
 ---
 
@@ -859,8 +1244,14 @@ The power management subsystem (documented in [`06_power_management.md`](../02_h
 - QPA2962 -- 6--18 GHz 10 W GaN MMIC power amplifier ([Qorvo](https://www.qorvo.com))
 - ADF4382A -- 62.5 MHz to 21 GHz microwave wideband synthesizer ([Analog Devices product page](https://www.analog.com/en/products/adf4382a.html))
 - LMX2820 -- 45 MHz to 22.6 GHz wideband synthesizer, FOM $-236~\text{dBc/Hz}$ ([Texas Instruments product page](https://www.ti.com/product/LMX2820))
-- AD9680 -- 14-bit, 500 MSPS / 1 GSPS dual ADC ([Analog Devices product page](https://www.analog.com/en/products/ad9680.html))
+- AD9484 -- 8-bit, 500 MSPS ADC ([Analog Devices product page](https://www.analog.com/en/products/ad9484.html))
+- AD9680 -- 14-bit, 500 MSPS / 1 GSPS dual ADC, JESD204B interface ([Analog Devices product page](https://www.analog.com/en/products/ad9680.html))
+- AD9208 -- 14-bit, 3 GSPS dual ADC, JESD204B interface ([Analog Devices product page](https://www.analog.com/en/products/ad9208.html))
 - AD9523-1 -- Dual-PLL 12-output clock distribution IC ([Analog Devices](https://www.analog.com/en/products/ad9523-1.html))
+- XC7A100T -- Artix-7 FPGA (DS181: Artix-7 Data Sheet, [AMD/Xilinx](https://www.amd.com/en/products/adaptive-socs-and-fpgas/fpga/artix-7.html))
+- Artix UltraScale+ -- AU10P, AU15P, AU25P FPGA family ([AMD product selection guide](https://www.amd.com/en/products/adaptive-socs-and-fpgas/fpga/artix-ultrascale-plus.html))
+- Opal Kelly XEM8305 -- AU15P + FT601 USB 3.0 development board ([Opal Kelly](https://www.opalkelly.com/products/fpga-integration/xem8305))
+- ADAR1000 Datasheet -- X/Ku-band 4-channel analog beamformer, 2-bit DEV_ADDR, 7-bit phase resolution ([Analog Devices](https://www.analog.com/media/en/technical-documentation/data-sheets/adar1000.pdf))
 
 ### Industry and Academic References
 - Altum RF, "Front-End Components for X/Ku Band Phased Array Radar," Nov 2025 -- GaN/SiGe comparison landscape
@@ -870,7 +1261,9 @@ The power management subsystem (documented in [`06_power_management.md`](../02_h
 - R. E. Best, *Phase-Locked Loops: Design, Simulation, and Applications*, 6th ed., McGraw-Hill, 2007 -- PLL phase noise theory
 - D. B. Leeson, "A Simple Model of Feedback Oscillator Noise Spectrum," *Proceedings of the IEEE*, vol. 54, no. 2, 1966 -- Leeson's oscillator noise model
 - B. Razavi, "A Study of Phase Noise in CMOS Oscillators," *IEEE JSSC*, vol. 31, no. 3, 1996 -- Oscillator phase noise analysis
+- W. Kester, *The Data Conversion Handbook*, Analog Devices / Newnes, 2005 -- ADC noise analysis, SQNR derivation, converter interface design
+- Xilinx/AMD, "JESD204B Interface for UltraScale+ FPGAs," User Guide UG578 -- JESD204B PHY and link layer implementation
+- Xilinx/AMD, "UltraScale Architecture DSP Slice," User Guide UG579 -- DSP48E2 architecture and capabilities
 - MDPI, "Design of X-Band TR Module Based on LTCC," *Electronics*, vol. 12, 2023 -- LTCC miniaturization for X-band T/R modules
 - IEICE, "Integrated X-band phased array antenna with LTCC 3D T/R module," *IEICE Electronics Express*, vol. 17, no. 4, 2020 -- 3D LTCC integration with anodized aluminum multilayer
-- ADAR1000 Datasheet -- X/Ku-band 4-channel analog beamformer, 2-bit DEV_ADDR, 7-bit phase resolution ([Analog Devices](https://www.analog.com/media/en/technical-documentation/data-sheets/adar1000.pdf))
 - Mailloux, R.J., *Phased Array Antenna Handbook*, 3rd ed., Artech House, 2018 -- Array scaling, grating lobes, mutual coupling
