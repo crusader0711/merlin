@@ -646,7 +646,187 @@ The Extended variant's slotted waveguide antenna is structurally incompatible wi
 
 ## 5. Antenna Array Expansion
 
-*To be completed in Plan 06-02.*
+*Requirement: HWRES-05*
+
+### 5.1 Current State
+
+The AERIS-10 uses a **16-element uniform linear array (ULA)** with half-wavelength spacing, controlled by four ADAR1000 beamformer ICs. The baseline array parameters from [`04_antenna_beamforming.md`](../02_hardware/04_antenna_beamforming.md):
+
+| Parameter | Symbol | Value | Source |
+|-----------|--------|-------|--------|
+| Element count | $N$ | 16 | [`04_antenna_beamforming.md`](../02_hardware/04_antenna_beamforming.md#16-element-array-geometry) Section 4 |
+| Inter-element spacing | $d$ | $\lambda/2 = 14.3~\text{mm}$ at 10.5 GHz | Eq. (HW-ANT-6) |
+| Total aperture | $L_\text{aperture}$ | 214.3 mm | Eq. (HW-ANT-7) |
+| Beamwidth (broadside) | $\theta_{3\text{dB}}$ | ~6.3 deg | Eq. (HW-ANT-10) |
+| Scan range (mechanical) | $\theta_\text{max}$ | $\pm 62.7°$ | Eq. (HW-ANT-3) |
+| Scan range (practical) | -- | $\pm 33°$ (acceptable sidelobes) | Eq. (BF-16) in [`03_beamforming_theory.md`](../01_physics/03_beamforming_theory.md) |
+| Array gain | $G_\text{array}$ | $10\log_{10}(16) = 12.0~\text{dB}$ | Array factor theory |
+
+**ADAR1000 SPI Topology** (from [`04_antenna_beamforming.md`](../02_hardware/04_antenna_beamforming.md#spi-interface) Section 2.2):
+
+| ADAR1000 Unit | DEV_ADDR | Elements | CS GPIO |
+|---------------|----------|----------|---------|
+| #1 | 0x00 | 0--3 | GPIOA Pin 0 |
+| #2 | 0x01 | 4--7 | GPIOA Pin 1 |
+| #3 | 0x02 | 8--11 | GPIOA Pin 2 |
+| #4 | 0x03 | 12--15 | GPIOA Pin 3 |
+
+The ADAR1000 DEV_ADDR field is **2 bits** (addresses 0x00--0x03), supporting a maximum of **4 devices per SPI bus**. The current system uses SPI1 on the STM32F746 with 4 individual chip selects. SPI4 is used for the AD9523 clock distribution and ADF4382A synthesizers. SPI2, SPI3, SPI5, and SPI6 are available on the STM32F746.
+
+### 5.2 Literature Survey
+
+#### Array Gain Scaling
+
+Array gain for a uniformly weighted $N$-element ULA scales as $10\log_{10}(N)$ (from the array factor peak of Eq. (BF-3) in [`03_beamforming_theory.md`](../01_physics/03_beamforming_theory.md)):
+
+$$
+G_\text{array}(N) = 10\log_{10}(N) \tag{HW-IMP-11}
+$$
+
+The radar range equation (Eq. FMCW-6 in [`01_fmcw_theory.md`](../01_physics/01_fmcw_theory.md)) shows that maximum detection range scales with the square root of antenna gain (since the same antenna is used for transmit and receive, $G$ appears twice in the range equation, giving $R_\text{max} \propto G^{1/2}$):
+
+$$
+R_\text{max} \propto G_\text{array}^{1/2} \propto N^{1/2} \tag{HW-IMP-12}
+$$
+
+#### Beamwidth Scaling
+
+From the half-power beamwidth expression Eq. (BF-10) in [`03_beamforming_theory.md`](../01_physics/03_beamforming_theory.md):
+
+$$
+\theta_{3\text{dB}} \approx \frac{0.886\lambda}{Nd} \tag{BF-10}
+$$
+
+With $d = \lambda/2$ maintained for all array sizes, the beamwidth scales inversely with element count:
+
+$$
+\theta_{3\text{dB}} \approx \frac{0.886}{N \times 0.5} = \frac{1.772}{N} \quad \text{radians} \tag{HW-IMP-13}
+$$
+
+#### Scaling Analysis Table
+
+| Parameter | 16 elements (current) | 32 elements | 64 elements |
+|-----------|----------------------|-------------|-------------|
+| ADAR1000 count | 4 | 8 | 16 |
+| SPI buses required | 1 | 2 | 4 |
+| Array gain $G_\text{array}$ | 12.0 dB | 15.1 dB (+3.0 dB) | 18.1 dB (+6.0 dB) |
+| Beamwidth $\theta_{3\text{dB}}$ (broadside) | 6.3 deg | 3.2 deg | 1.6 deg |
+| Aperture length $L_\text{aperture}$ | 214 mm (8.4 in) | 443 mm (17.4 in) | 900 mm (35.4 in) |
+| Range multiplier ($N^{1/2}$) | 1.0x | 1.41x | 2.0x |
+| ADTR1107 T/R modules | 16 | 32 | 64 |
+| Total PA power (ADTR1107 at 316 mW) | 5.1 W | 10.1 W | 20.2 W |
+
+#### Grating Lobe Analysis
+
+With $d = \lambda/2$ maintained for all array sizes, the grating lobe condition Eq. (BF-16) in [`03_beamforming_theory.md`](../01_physics/03_beamforming_theory.md) remains satisfied:
+
+$$
+\frac{d}{\lambda} = 0.5 < \frac{1}{1 + \sin\theta_\text{max}} \tag{BF-16}
+$$
+
+For the practical scan range of $\pm 33°$, the grating-lobe-free limit is $d/\lambda < 0.649$, providing **30% margin** above the half-wavelength spacing. Expanding the array to 32 or 64 elements at $d = \lambda/2$ does **not** introduce grating lobes -- the grating lobe condition depends only on $d/\lambda$ and the scan range, not on the number of elements.
+
+The increased element count does, however, produce **narrower grating lobes** (proportional to $1/N$) if element spacing were to exceed $\lambda/2$, making proper spacing more critical for larger arrays.
+
+### 5.3 Gap Analysis
+
+#### SPI Bus Scaling Constraint (Pitfall 4)
+
+The ADAR1000 DEV_ADDR is a **2-bit** hardware address field (bits [6:5] of the SPI transaction byte 0, documented in [`04_antenna_beamforming.md`](../02_hardware/04_antenna_beamforming.md#spi-interface) Section 2.2). This limits addressing to a maximum of **4 ADAR1000 devices per SPI bus**.
+
+**32-element expansion (8 ADAR1000 devices):**
+- Requires **2 SPI buses** (4 devices per bus)
+- SPI1 retains current 4 devices (elements 0--15)
+- SPI2 or SPI3 added for new 4 devices (elements 16--31)
+- STM32F746 SPI2 (PB10/PB14/PB15) or SPI3 (PB3/PB4/PB5) available
+- Firmware change: `ADAR1000_Manager` extended to support dual-bus operation with bus selection per device group
+
+**64-element expansion (16 ADAR1000 devices):**
+- Requires **4 SPI buses** (4 devices per bus)
+- SPI1 + SPI2 + SPI3 + SPI5 (or SPI6) allocated to ADAR1000 control
+- STM32F746 has SPI1--SPI6 (6 total); SPI1 (ADAR1000) and SPI4 (AD9523/ADF4382A) currently used, leaving SPI2, SPI3, SPI5, SPI6 available -- sufficient for 64-element expansion
+- Firmware change: significant -- quad-bus management, parallel SPI transfers, modified beam matrix structure
+
+#### Physical Aperture Constraints
+
+| Array Size | Aperture Length | Physical Assessment |
+|------------|----------------|---------------------|
+| 16 elements | 214 mm (8.4 in) | Fits both variants |
+| 32 elements | 443 mm (17.4 in) | Fits Extended; tight for Nexus |
+| 64 elements | 900 mm (35.4 in) | Requires platform redesign |
+
+> **Variant Note: Physical Constraints**
+> | | Nexus (AERIS-10N) | Extended (AERIS-10X) |
+> |--|-------|----------|
+> | 32-element feasibility | **TIGHT** -- 443 mm linear aperture may exceed Nexus platform width; mechanical redesign likely required | **FEASIBLE** -- Extended platform has sufficient space for 443 mm aperture |
+> | 64-element feasibility | **NOT FEASIBLE** -- 900 mm exceeds any reasonable compact platform dimension | **CHALLENGING** -- 900 mm aperture requires dedicated mounting structure |
+> | Array configuration | Linear ULA (1D steering) | Could consider 2D subarray for elevation + azimuth |
+
+#### Beam Steering Time Impact
+
+The beam steering sequence (documented in [`04_antenna_beamforming.md`](../02_hardware/04_antenna_beamforming.md#beam-steering-sequence) Section 3.6) programs all ADAR1000 devices sequentially before each chirp burst. The SPI programming time per beam position scales linearly with the number of ADAR1000 devices:
+
+$$
+T_\text{SPI}(N_\text{dev}) = N_\text{dev} \times T_\text{SPI,1} \tag{HW-IMP-14}
+$$
+
+where $T_\text{SPI,1}$ is the time to program a single ADAR1000 (4 channels x 2 registers/channel x 3 bytes/transaction at SPI clock rate). At the current SPI1 clock rate, programming 4 ADAR1000 devices is fast relative to the chirp timing. However:
+
+- **32 elements (8 devices, 2 buses):** SPI buses can operate in parallel, so the effective programming time is $\max(T_\text{bus1}, T_\text{bus2})$, approximately equal to the current 4-device time if firmware uses DMA on both buses
+- **64 elements (16 devices, 4 buses):** Four parallel SPI buses, each programming 4 devices -- effective time remains comparable to current if all buses operate concurrently
+
+With 31 elevation positions and $M = 32$ chirps per position (16 long + 16 short), the total scan cycle includes $31 \times T_\text{SPI}$ SPI programming intervals. Parallel SPI operation is critical for maintaining scan cycle time as the array expands.
+
+#### Power Budget Scaling
+
+Each additional element requires one ADTR1107 T/R module (Nexus variant), scaling the PA power budget linearly:
+
+| Array Size | ADTR1107 Count | Total PA Power | DC Power (est. 50% PAE) |
+|------------|---------------|----------------|------------------------|
+| 16 elements | 16 | 5.1 W | ~10 W |
+| 32 elements | 32 | 10.1 W | ~20 W |
+| 64 elements | 64 | 20.2 W | ~40 W |
+
+The power management subsystem (documented in [`06_power_management.md`](../02_hardware/06_power_management.md)) would require higher-capacity voltage regulators and wider PCB power planes for the 5V PA supply rail.
+
+### 5.4 Feasibility Assessment
+
+| Factor | 32-Element Expansion | 64-Element Expansion |
+|--------|---------------------|---------------------|
+| SPI complexity | **MODERATE** -- 1 additional SPI bus | **HIGH** -- 3 additional SPI buses |
+| PCB redesign | **MODERATE** -- extended antenna PCB, new SPI routing | **HIGH** -- entirely new PCB, potential multi-board |
+| Firmware changes | **MODERATE** -- dual-bus SPI control, extended beam matrices ($31 \times 32$ per matrix) | **HIGH** -- quad-bus SPI, DMA parallelism, 4x beam matrix memory |
+| Mechanical impact | **MODERATE** -- 2x aperture length (443 mm) | **HIGH** -- 4x aperture length (900 mm), platform redesign |
+| Power budget | **MODERATE** -- 2x PA power (10 W total) | **HIGH** -- 4x PA power (20 W total), thermal management redesign |
+| Component cost | **MODERATE** -- 16 additional ADTR1107 + 4 additional ADAR1000 | **HIGH** -- 48 additional ADTR1107 + 12 additional ADAR1000 |
+| Performance gain | +3.0 dB array gain, 1.41x range | +6.0 dB array gain, 2.0x range |
+
+> **Variant Note: Expansion Feasibility**
+> | | Nexus (AERIS-10N) | Extended (AERIS-10X) |
+> |--|-------|----------|
+> | 32-element | **FEASIBLE with mechanical redesign** -- compact platform needs wider enclosure for 443 mm aperture | **FEASIBLE** -- Extended platform accommodates 443 mm aperture |
+> | 64-element | **NOT RECOMMENDED** -- 900 mm aperture incompatible with compact form factor; conflicts with Nexus design philosophy | **FEASIBLE with dedicated mount** -- Extended platform could support 900 mm with structural modifications |
+> | Recommended path | 32-element maximum for Nexus | 32-element near-term; 64-element as future option |
+
+### 5.5 Recommendations
+
+**Priority ranking:** MEDIUM-HIGH -- Array expansion provides guaranteed, well-understood performance improvement with mature physics (all equations already derived in Phase 2).
+
+**Key findings:**
+
+1. **32-element expansion is the practical near-term upgrade path** -- moderate complexity, meaningful +3.0 dB array gain, and 1.41x range improvement with well-characterized SPI scaling
+2. **64-element expansion is viable but requires platform redesign** -- the 900 mm aperture and quad-SPI bus architecture represent a significant engineering effort
+3. **SPI bus scaling is the primary firmware constraint** -- the 2-bit ADAR1000 DEV_ADDR limits 4 devices per bus, requiring multi-bus SPI management for arrays beyond 16 elements
+4. **Grating lobes are not a concern** -- with $d = \lambda/2$ maintained, grating lobes remain outside visible space for all scan angles within the $\pm 33°$ practical range (30% margin per Eq. BF-16)
+5. **Power budget scales linearly** -- 32-element array requires ~20 W DC for PA supply, within typical platform power budgets
+
+**Recommended investigation steps (not implementation specifications):**
+
+1. **Prototype 32-element array on Extended platform** -- measure actual beam pattern, sidelobe levels, and scan performance vs theoretical predictions from Eq. (BF-8) and Eq. (BF-9)
+2. **Implement dual-SPI firmware** -- extend `ADAR1000_Manager` to support SPI1 + SPI2 with DMA for parallel bus operation; verify beam steering time overhead is acceptable
+3. **Evaluate mechanical mounting** -- assess whether the Nexus platform can accommodate a 443 mm aperture with acceptable structural rigidity and pointing stability
+4. **Characterize mutual coupling** -- a 32-element array has different edge-element coupling patterns than a 16-element array; measure active element patterns and assess calibration requirements (reference [`03_beamforming_theory.md`](../01_physics/03_beamforming_theory.md#element-pattern-and-mutual-coupling) Section 7)
+5. **Cost-benefit analysis** -- compare the 1.41x range improvement from 32-element expansion against the 1.6--2.4x range improvement from GaN PA upgrade (HWRES-01) at equivalent cost
 
 ---
 
@@ -666,12 +846,12 @@ The Extended variant's slotted waveguide antenna is structurally incompatible wi
 ### Phase 2 Physics Cross-References
 - [`01_fmcw_theory.md`](../01_physics/01_fmcw_theory.md) -- radar range equation Eq. (FMCW-6), $R_\text{max} \propto P_t^{1/4}$
 - [`05_noise_analysis.md`](../01_physics/05_noise_analysis.md) -- Friis cascade Eq. (NF-7), AERIS-10 chain Eq. (NF-8), SQNR Eq. (NF-11)
-- [`03_beamforming_theory.md`](../01_physics/03_beamforming_theory.md) -- array factor, grating lobe analysis Eq. (BF-10)
+- [`03_beamforming_theory.md`](../01_physics/03_beamforming_theory.md) -- array factor Eq. (BF-3), beamwidth Eq. (BF-10), grating lobe analysis Eq. (BF-16), element pattern Eq. (BF-17)
 
 ### Phase 3 Hardware Cross-References
 - [`02_rf_frontend.md`](../02_hardware/02_rf_frontend.md) -- ADTR1107 baseline, LT5552 mixer, AD9484 ADC, cascaded NF reference Eq. (HW-RF-4)
 - [`03_frequency_synthesis.md`](../02_hardware/03_frequency_synthesis.md) -- ADF4382A synthesizers, AD9523 clock tree, phase noise Eq. (HW-FS-7) through Eq. (HW-FS-8)
-- [`04_antenna_beamforming.md`](../02_hardware/04_antenna_beamforming.md) -- ADAR1000 beamformer, 16-element array geometry
+- [`04_antenna_beamforming.md`](../02_hardware/04_antenna_beamforming.md) -- ADAR1000 beamformer, 16-element array geometry, SPI topology Section 2.2, beam steering Section 3
 - [`05_fpga_board.md`](../02_hardware/05_fpga_board.md) -- XC7A100T resources, clock domains
 
 ### Component Datasheets and Product Pages
@@ -690,3 +870,7 @@ The Extended variant's slotted waveguide antenna is structurally incompatible wi
 - R. E. Best, *Phase-Locked Loops: Design, Simulation, and Applications*, 6th ed., McGraw-Hill, 2007 -- PLL phase noise theory
 - D. B. Leeson, "A Simple Model of Feedback Oscillator Noise Spectrum," *Proceedings of the IEEE*, vol. 54, no. 2, 1966 -- Leeson's oscillator noise model
 - B. Razavi, "A Study of Phase Noise in CMOS Oscillators," *IEEE JSSC*, vol. 31, no. 3, 1996 -- Oscillator phase noise analysis
+- MDPI, "Design of X-Band TR Module Based on LTCC," *Electronics*, vol. 12, 2023 -- LTCC miniaturization for X-band T/R modules
+- IEICE, "Integrated X-band phased array antenna with LTCC 3D T/R module," *IEICE Electronics Express*, vol. 17, no. 4, 2020 -- 3D LTCC integration with anodized aluminum multilayer
+- ADAR1000 Datasheet -- X/Ku-band 4-channel analog beamformer, 2-bit DEV_ADDR, 7-bit phase resolution ([Analog Devices](https://www.analog.com/media/en/technical-documentation/data-sheets/adar1000.pdf))
+- Mailloux, R.J., *Phased Array Antenna Handbook*, 3rd ed., Artech House, 2018 -- Array scaling, grating lobes, mutual coupling
