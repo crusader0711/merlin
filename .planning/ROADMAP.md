@@ -115,11 +115,12 @@ Plans:
   2. Frequency synthesizer phase noise improvements and higher-resolution ADC options each include calculated impact on Doppler floor and SNR respectively, with FPGA interface compatibility assessed
   3. Antenna-in-Package miniaturization and antenna array expansion (16 to 32/64 elements) research addresses both AERIS-10 variants (Nexus and Extended) with PCB constraints and grating lobe implications
   4. FPGA upgrade path (Artix UltraScale+) includes resource comparison, PCB migration complexity, and USB 3.0 compatibility assessment
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
+- [ ] 06-01-PLAN.md — RF front-end research: GaN vs SiGe comparison and synthesizer phase noise (HWRES-01, HWRES-02)
+- [ ] 06-02-PLAN.md — Antenna research: AiP miniaturization and array expansion (HWRES-03, HWRES-05)
+- [ ] 06-03-PLAN.md — Digital back-end research: ADC upgrade, FPGA upgrade, and cross-topic summary (HWRES-04, HWRES-06)
 
 ## Progress
 
@@ -133,4 +134,4 @@ Phases 1 through 4 execute sequentially. Phases 5 and 6 can execute in parallel 
 | 3. Hardware Documentation | 5/5 | Complete   | 2026-03-13 |
 | 4. Software Documentation | 3/3 | Complete   | 2026-03-14 |
 | 5. Software Improvement Research | 0/4 | Not started | - |
-| 6. Hardware Improvement Research | 0/TBD | Not started | - |
+| 6. Hardware Improvement Research | 0/3 | Not started | - |
