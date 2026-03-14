@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Notation & Parameter Standardization** - Establish project-wide symbol table, master parameter table, and cross-reference conventions before any derivations begin (completed 2026-03-13)
 - [x] **Phase 2: Physics Foundation** - Derive FMCW theory, signal models, beamforming, and detection theory from first principles (completed 2026-03-13)
-- [x] **Phase 3: Hardware Documentation** - Document all hardware subsystems with component specs, register maps, and analysis (completed 2026-03-13)
+- [x] **Phase 3: Hardware Documentation** - Document all hardware subsystems with component specs, register maps, and analysis (completed 2026-03-13)
 - [ ] **Phase 4: Software Documentation** - Document FPGA pipeline, STM32 firmware, and Python GUI by signal/data flow
 - [ ] **Phase 5: Software Improvement Research** - Survey target detection, signal processing, and FPGA optimization advances with feasibility assessments
 - [ ] **Phase 6: Hardware Improvement Research** - Survey RF, antenna, ADC, and FPGA upgrade paths with noise figure impact analysis
@@ -81,12 +81,12 @@ Plans:
   2. STM32 firmware documentation covers initialization sequence, SPI/I2C device addresses, power-on/off sequences, and peripheral configuration including derivation of magic numbers (PRI1=167us, Guard=175.4us, phase differences array)
   3. Python GUI documentation covers USB protocol, RadarTarget dataclass, DBSCAN clustering parameters, Kalman state model, and map rendering for canonical version GUI_V6.py only (V1-V5 explicitly excluded)
   4. USB interface protocol documents FT601 command/data format, packet structure, RadarSettings.parseFromUSB(), and streaming protocol completely enough to implement a new client
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
-- [ ] 04-03: TBD
+- [ ] 04-01-PLAN.md — FPGA signal processing pipeline by signal flow with magic number derivations (SWDOC-01)
+- [ ] 04-02-PLAN.md — STM32 firmware initialization, peripherals, and radar loop documentation (SWDOC-02)
+- [ ] 04-03-PLAN.md — USB interface protocol and Python GUI V6 architecture documentation (SWDOC-03, SWDOC-04)
 
 ### Phase 5: Software Improvement Research
 **Goal**: Engineers have a grounded survey of software improvement options with feasibility assessments against the actual Artix-7 XC7A100T hardware
@@ -130,6 +130,6 @@ Phases 1 through 4 execute sequentially. Phases 5 and 6 can execute in parallel 
 | 1. Notation & Parameter Standardization | 1/2 | Executing | - |
 | 2. Physics Foundation | 4/4 | Complete   | 2026-03-13 |
 | 3. Hardware Documentation | 5/5 | Complete   | 2026-03-13 |
-| 4. Software Documentation | 0/TBD | Not started | - |
+| 4. Software Documentation | 0/3 | Not started | - |
 | 5. Software Improvement Research | 0/TBD | Not started | - |
 | 6. Hardware Improvement Research | 0/TBD | Not started | - |
