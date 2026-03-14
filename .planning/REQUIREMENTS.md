@@ -56,9 +56,9 @@
 - [x] **HWRES-01**: GaN vs SiGe front-end comparison — output power, noise figure, die size at X-band, comparison to current ADTR1107
 - [x] **HWRES-02**: Frequency synthesizer phase noise improvements — fractional-N PLL advances, ADF4382 vs competing synthesizers, Doppler floor improvement
 - [x] **HWRES-03**: Antenna-in-Package (AiP) miniaturization — 3D-stacked T/R modules, LTCC implementations, compatibility with ADAR1000+ADTR1107
-- [ ] **HWRES-04**: Higher-resolution ADC options — 14 to 16-bit upgrade, FPGA interface impact, SNR improvement calculation
+- [x] **HWRES-04**: Higher-resolution ADC options — 14 to 16-bit upgrade, FPGA interface impact, SNR improvement calculation
 - [x] **HWRES-05**: Antenna array expansion — 16 to 32/64 elements, ADAR1000 cascading, PCB constraints, grating lobe implications
-- [ ] **HWRES-06**: FPGA upgrade path — Artix UltraScale+ resource comparison, PCB migration complexity, USB 3.0 compatibility
+- [x] **HWRES-06**: FPGA upgrade path — Artix UltraScale+ resource comparison, PCB migration complexity, USB 3.0 compatibility
 
 ## v2 Requirements
 
@@ -123,9 +123,9 @@
 | HWRES-01 | Phase 6 | Complete |
 | HWRES-02 | Phase 6 | Complete |
 | HWRES-03 | Phase 6 | Complete |
-| HWRES-04 | Phase 6 | Pending |
+| HWRES-04 | Phase 6 | Complete |
 | HWRES-05 | Phase 6 | Complete |
-| HWRES-06 | Phase 6 | Pending |
+| HWRES-06 | Phase 6 | Complete |
 
 **Coverage:**
 - v1 requirements: 37 total

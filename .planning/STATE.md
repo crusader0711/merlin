@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 06-02-PLAN.md (AiP miniaturization and antenna array expansion research)
-last_updated: "2026-03-14T00:55:46.289Z"
+stopped_at: Completed 06-03-PLAN.md (ADC upgrade, FPGA upgrade, cross-topic summary -- Phase 6 complete)
+last_updated: "2026-03-14T01:00:14.920Z"
 last_activity: 2026-03-14 — Completed 05-04-PLAN.md (target tracking and adaptive beamforming research)
 progress:
   total_phases: 6
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 21
-  completed_plans: 20
+  completed_plans: 21
   percent: 95
 ---
 
@@ -139,6 +139,7 @@ Progress: [█████████░] 90%
 | Phase 05 P01 | 6 | 2 tasks | 2 files |
 | Phase 05 P04 | 6 | 2 tasks | 2 files |
 | Phase 06 P02 | 5 | 2 tasks | 1 files |
+| Phase 06 P03 | 5 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -202,6 +203,7 @@ Recent decisions affecting current work:
 - [Phase 05-04]: MVDR/LCMV on Artix-7 INFEASIBLE (needs 2000+ DSPs vs 151 available); hybrid host-computed FEASIBLE
 - [Phase 05-04]: ADAR1000 quantization limits adaptive null depth to ~-29 dB regardless of algorithm
 - [Phase 06]: AiP miniaturization rated LOW priority (Nexus-only); 32-element array expansion is practical near-term upgrade (+3 dB gain, 1.41x range); ADAR1000 2-bit DEV_ADDR limits 4 devices per SPI bus
+- [Phase 06]: ADC+FPGA (HWRES-04+06) ranked #1 priority: 36.1 dB SQNR from 8-to-14-bit is largest system improvement; AU15P minimum FPGA target; AD9680 primary ADC candidate; paired upgrade required due to JESD204B
 
 ### Pending Todos
 
@@ -215,6 +217,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T00:52:20.091Z
-Stopped at: Completed 06-02-PLAN.md (AiP miniaturization and antenna array expansion research)
+Last session: 2026-03-14T01:00:14.918Z
+Stopped at: Completed 06-03-PLAN.md (ADC upgrade, FPGA upgrade, cross-topic summary -- Phase 6 complete)
 Resume file: None
