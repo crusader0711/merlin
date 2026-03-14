@@ -3,11 +3,27 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
+stopped_at: Completed 04-03-PLAN.md (USB protocol and Python GUI)
+last_updated: "2026-03-14T00:17:35.354Z"
+last_activity: 2026-03-14 — Completed 04-01-PLAN.md (FPGA signal processing pipeline)
+progress:
+  total_phases: 6
+  completed_phases: 4
+  total_plans: 14
+  completed_plans: 14
+  percent: 93
+---
+
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: executing
 stopped_at: Completed 04-01-PLAN.md (FPGA signal processing pipeline)
 last_updated: "2026-03-14T00:16:43.843Z"
 last_activity: 2026-03-14 — Completed 03-05-PLAN.md (timing budget and GPS/IMU transforms)
 progress:
-  total_phases: 6
+  [█████████░] 93%
   completed_phases: 3
   total_plans: 14
   completed_plans: 12
@@ -83,6 +99,7 @@ Progress: [█████████░] 86%
 *Updated after each plan completion*
 | Phase 03 P05 | 5 | 2 tasks | 2 files |
 | Phase 04 P01 | 4min | 2 tasks | 2 files |
+| Phase 04 P03 | 5 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -128,6 +145,8 @@ Recent decisions affecting current work:
 - [Phase 04]: Threshold detection documented honestly as placeholder, not true CFAR, despite CFAR variable names in source
 - [Phase 04]: Signal-flow documentation organization (ADC to USB) chosen over module-by-module per research recommendation
 - [Phase 04]: Magic number derivations include numerical verification as exception to anti-pattern 5.1
+- [Phase 04]: FT601 packet: 11 transfers (1 header + 4 range + 4 Doppler + 1 detection + 1 footer) per usb_data_interface.v
+- [Phase 04]: GUI system_frequency default 10e9 flagged as known discrepancy vs canonical 10.5 GHz
 
 ### Pending Todos
 
@@ -141,6 +160,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T00:16:43.841Z
-Stopped at: Completed 04-01-PLAN.md (FPGA signal processing pipeline)
+Last session: 2026-03-14T00:17:35.352Z
+Stopped at: Completed 04-03-PLAN.md (USB protocol and Python GUI)
 Resume file: None
