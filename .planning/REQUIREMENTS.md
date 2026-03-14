@@ -45,8 +45,8 @@
 - [ ] **SWRES-01**: CFAR variants survey — CA-CFAR, OS-CFAR, GOCA-CFAR, SOCA-CFAR with false alarm rate, detection probability, computational cost comparison
 - [ ] **SWRES-02**: Clutter rejection research — MTI filtering, Doppler notch filtering, recursive background subtraction, delay-line clutter rejection
 - [x] **SWRES-03**: Range extension via SNR optimization — coherent integration techniques, longer CPI, non-coherent integration, expected range improvement derivation
-- [ ] **SWRES-04**: FPGA pipeline throughput optimization — HLS vs hand-coded Verilog, loop unrolling for FFT/matched filter, multi-bank memory, Artix-7 resource margins
-- [ ] **SWRES-05**: ML-based detection alternatives to CFAR — autoencoder-based detection, CNN range-Doppler detectors, FPGA inference feasibility assessment
+- [x] **SWRES-04**: FPGA pipeline throughput optimization — HLS vs hand-coded Verilog, loop unrolling for FFT/matched filter, multi-bank memory, Artix-7 resource margins
+- [x] **SWRES-05**: ML-based detection alternatives to CFAR — autoencoder-based detection, CNN range-Doppler detectors, FPGA inference feasibility assessment
 - [x] **SWRES-06**: Pulse compression improvements — NLFM waveform optimization, sidelobe reduction without SNR loss, chirp memory/DAC feasibility
 - [ ] **SWRES-07**: Target tracking improvements — IMM-Kalman filter, variational Bayesian IMM, adaptive Kalman for maneuvering targets
 - [ ] **SWRES-08**: Adaptive beamforming research — MVDR/LCMV beamformers, hybrid robust beamforming, real-time FPGA weight computation feasibility
@@ -115,8 +115,8 @@
 | SWRES-01 | Phase 5 | Pending |
 | SWRES-02 | Phase 5 | Pending |
 | SWRES-03 | Phase 5 | Complete |
-| SWRES-04 | Phase 5 | Pending |
-| SWRES-05 | Phase 5 | Pending |
+| SWRES-04 | Phase 5 | Complete |
+| SWRES-05 | Phase 5 | Complete |
 | SWRES-06 | Phase 5 | Complete |
 | SWRES-07 | Phase 5 | Pending |
 | SWRES-08 | Phase 5 | Pending |

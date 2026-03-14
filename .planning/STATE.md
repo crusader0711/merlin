@@ -3,11 +3,27 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
+stopped_at: Completed 05-01-PLAN.md (CFAR variants and clutter rejection research)
+last_updated: "2026-03-14T00:46:22.820Z"
+last_activity: 2026-03-14 — Completed 06-01-PLAN.md (GaN vs SiGe front-end and synthesizer phase noise research)
+progress:
+  total_phases: 6
+  completed_phases: 5
+  total_plans: 21
+  completed_plans: 19
+  percent: 86
+---
+
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: executing
 stopped_at: Completed 06-01-PLAN.md (GaN vs SiGe front-end and synthesizer phase noise research)
 last_updated: "2026-03-14T00:45:23.670Z"
 last_activity: 2026-03-14 — Completed 06-01-PLAN.md (GaN vs SiGe front-end and synthesizer phase noise research)
 progress:
-  total_phases: 6
+  [█████████░] 86%
   completed_phases: 4
   total_plans: 21
   completed_plans: 15
@@ -103,6 +119,8 @@ Progress: [████████░░] 76%
 | Phase 04 P02 | 4 | 1 tasks | 1 files |
 | Phase 05 P02 | 5 | 2 tasks | 2 files |
 | Phase 06 P01 | 5 | 2 tasks | 1 files |
+| Phase 05 P03 | 6 | 2 tasks | 2 files |
+| Phase 05 P01 | 6 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -156,6 +174,12 @@ Recent decisions affecting current work:
 - [Phase 05]: NLFM PSL limited to -35 to -40 dB by 8-bit DAC (vs theoretical -45 to -50 dB)
 - [Phase 05]: Keystone range migration compensation infeasible on current BRAM budget; segmented integration as alternative
 - [Phase 06]: HW-IMP equation prefix for hardware improvement research; GaN PA advantage is transmit power not NF; ADF4382A is best-in-class synthesizer; ADC quantization floor is Doppler bottleneck
+- [Phase 05-03]: Dual-port BRAM highest priority optimization (zero cost, immediate throughput gain)
+- [Phase 05-03]: Hybrid CFAR+ML recommended over on-FPGA ML (avoids resource constraint via host PC)
+- [Phase 05-03]: Multi-bank BRAM interleaving and 2x/4x parallelism infeasible/marginal due to BRAM constraint
+- [Phase 05]: CA-CFAR ranked Priority 1; GOCA-CFAR Priority 2 for clutter edges; 2-pulse canceller Priority 1 for clutter rejection
+- [Phase 05]: Clutter measurement campaign prerequisite for both CFAR variant selection and clutter rejection tuning
+- [Phase 05]: Multi-mode CFAR rated MARGINAL (49-66% of available LUT headroom); all other CFAR variants FEASIBLE
 
 ### Pending Todos
 
@@ -169,6 +193,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T00:45:23.668Z
-Stopped at: Completed 06-01-PLAN.md (GaN vs SiGe front-end and synthesizer phase noise research)
+Last session: 2026-03-14T00:46:22.818Z
+Stopped at: Completed 05-01-PLAN.md (CFAR variants and clutter rejection research)
 Resume file: None

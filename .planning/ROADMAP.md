@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Physics Foundation** - Derive FMCW theory, signal models, beamforming, and detection theory from first principles (completed 2026-03-13)
 - [x] **Phase 3: Hardware Documentation** - Document all hardware subsystems with component specs, register maps, and analysis (completed 2026-03-13)
 - [x] **Phase 4: Software Documentation** - Document FPGA pipeline, STM32 firmware, and Python GUI by signal/data flow (completed 2026-03-14)
-- [ ] **Phase 5: Software Improvement Research** - Survey target detection, signal processing, and FPGA optimization advances with feasibility assessments
+- [x] **Phase 5: Software Improvement Research** - Survey target detection, signal processing, and FPGA optimization advances with feasibility assessments (completed 2026-03-14)
 - [ ] **Phase 6: Hardware Improvement Research** - Survey RF, antenna, ADC, and FPGA upgrade paths with noise figure impact analysis
 
 ## Phase Details
@@ -133,5 +133,5 @@ Phases 1 through 4 execute sequentially. Phases 5 and 6 can execute in parallel 
 | 2. Physics Foundation | 4/4 | Complete   | 2026-03-13 |
 | 3. Hardware Documentation | 5/5 | Complete   | 2026-03-13 |
 | 4. Software Documentation | 3/3 | Complete   | 2026-03-14 |
-| 5. Software Improvement Research | 1/4 | In Progress|  |
+| 5. Software Improvement Research | 4/4 | Complete   | 2026-03-14 |
 | 6. Hardware Improvement Research | 1/3 | In Progress|  |
