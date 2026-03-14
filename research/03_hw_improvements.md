@@ -491,7 +491,150 @@ The estimated SPNR values (170+ dB) are far above the ADC quantization floor (~5
 
 ## 3. Antenna-in-Package Miniaturization
 
-*To be completed in Plan 06-02.*
+*Requirement: HWRES-03*
+
+### 3.1 Current State
+
+The AERIS-10 antenna subsystem uses a **PCB-level integration** approach with discrete components at each array element. The current architecture from [`04_antenna_beamforming.md`](../02_hardware/04_antenna_beamforming.md):
+
+| Component | Count | Function | Package Level |
+|-----------|-------|----------|---------------|
+| ADAR1000 beamformer IC | 4 units | 4-channel phase/gain control | Surface-mount IC |
+| ADTR1107 T/R module | 16 units | PA + LNA + T/R switch per element | Surface-mount module |
+| Antenna elements | 16 | Radiating elements | PCB patch (Nexus) / waveguide slot (Extended) |
+
+Each element occupies a PCB footprint that includes the ADTR1107 module, associated bias components, and RF traces to the ADAR1000 beamformer. The inter-element spacing is $d = \lambda/2 = 14.3~\text{mm}$ at $f_c = 10.5~\text{GHz}$ (Eq. HW-ANT-6 in [`04_antenna_beamforming.md`](../02_hardware/04_antenna_beamforming.md)), yielding a total aperture length of:
+
+$$
+L_\text{aperture} = (N - 1) \times d = 15 \times 14.3~\text{mm} = 214.3~\text{mm} \tag{HW-ANT-7}
+$$
+
+The ADAR1000 devices are controlled via SPI1 on the STM32F746 with 2-bit DEV_ADDR addressing (0x00--0x03), as documented in [`04_antenna_beamforming.md`](../02_hardware/04_antenna_beamforming.md#spi-interface) Section 2.2. The firmware bypasses the internal beam RAM and writes phase/gain settings directly via SPI for each of the 31 elevation beam positions.
+
+> **Variant Note:**
+> | | Nexus (AERIS-10N) | Extended (AERIS-10X) |
+> |--|-------|----------|
+> | Antenna type | 8x16 patch array (PCB-printed) | 32x16 slotted waveguide |
+> | T/R module | ADTR1107 (integrated SiGe) | QPA2962 GaN PA + external LNA |
+> | Element pitch constraint | 14.3 mm (set by $\lambda/2$) | 14.3 mm (same RF constraint) |
+> | PCB area available | Compact platform, constrained | Larger platform, more available area |
+
+### 3.2 Literature Survey
+
+Antenna-in-Package (AiP) technology integrates the radiating antenna element, T/R module, and beamformer circuitry into a single multi-layer package, eliminating board-level RF interconnects and reducing per-element footprint.
+
+#### LTCC X-Band AiP Implementations
+
+| Implementation | Package Size | Technology | Performance | Source |
+|---------------|-------------|------------|-------------|--------|
+| Cadence X-band T/R AiP | 14.3 x 24.5 x 3.55 mm | LTCC with air cavities | RX gain >30 dB, TX EIRP 32--38.5 dBm | Cadence App Note |
+| 3D X-band T/R module | ~20 x 20 x 3.7 mm | Anodized aluminum multilayer | 4-channel integrated T/R | IEICE 2020 |
+| Miniaturized LTCC T/R | Various | LTCC 4-channel | 40% bandwidth at X-band | MDPI 2023 |
+
+**LTCC (Low-Temperature Co-fired Ceramic)** is the dominant substrate technology for X-band AiP implementations. Key advantages:
+
+- **Low dielectric loss** at X-band frequencies ($\tan\delta < 0.002$ for typical LTCC substrates)
+- **Hermetic packaging** -- ceramic substrate provides environmental protection without additional encapsulation
+- **Integrated air cavities** -- reduce dielectric loading on embedded patch antennas, improving radiation efficiency
+- **Multi-layer interconnect** -- 10--20 ceramic layers allow 3D routing of RF, DC bias, and digital control signals
+- **Thermal management** -- embedded thermal vias provide heat dissipation paths from active devices
+
+#### Comparison: Current PCB-Level vs AiP Approaches
+
+| Factor | Current PCB-Level | LTCC AiP | 3D-Stacked Module |
+|--------|-------------------|----------|-------------------|
+| Per-element footprint | ~20 x 25 mm (PCB area) | ~14 x 25 mm (Cadence ref) | ~20 x 20 mm |
+| Height | ~5 mm (component + PCB) | 3.55 mm | 3.7 mm |
+| RF interconnect loss | Board traces + connectors | Embedded stripline | Vertical transitions |
+| Modularity | Individual T/R replacement | Entire AiP replacement | Module-level replacement |
+| Element density | Limited by PCB routing | Higher (integrated routing) | Higher (vertical stacking) |
+| Thermal path | Via PCB ground plane | Embedded thermal vias | Aluminum substrate |
+
+#### Academic References
+
+- Cadence, "LTCC Transmit-Receive X-Band Module with Phased Array Antenna," Application Note -- LTCC AiP dimensions, performance, and air cavity technique
+- MDPI, "Design of X-Band TR Module Based on LTCC," *Electronics*, 2023 -- Miniaturized LTCC T/R module with 40% bandwidth
+- IEICE, "Integrated X-band phased array antenna with LTCC 3D T/R module," *IEICE Electronics Express*, 2020 -- 3D integration approach with anodized aluminum multilayer
+
+### 3.3 Gap Analysis
+
+#### Size Reduction Quantification
+
+The primary AiP benefit is per-element footprint reduction and the elimination of board-level RF routing:
+
+| Metric | Current PCB-Level | LTCC AiP (projected) | Reduction |
+|--------|-------------------|----------------------|-----------|
+| Per-element area (footprint) | ~500 mm$^2$ (20 x 25 mm) | ~350 mm$^2$ (14 x 25 mm) | ~30% |
+| Per-element height | ~5 mm | ~3.6 mm | ~28% |
+| RF trace length (element to beamformer) | 15--30 mm (PCB trace) | <5 mm (embedded) | >60% |
+| Interconnect insertion loss | 0.3--0.8 dB (PCB + connector) | <0.2 dB (embedded stripline) | ~0.5 dB |
+
+The interconnect loss reduction of ~0.5 dB appears between the ADAR1000 output and the antenna element. This loss currently appears in the transmit and receive paths, affecting both transmit EIRP and receive noise figure. Per the Friis cascade Eq. (NF-8) in [`05_noise_analysis.md`](../01_physics/05_noise_analysis.md), reducing the pre-LNA loss by 0.5 dB improves the system noise figure by approximately 0.5 dB (since pre-LNA losses add directly to $F_\text{sys}$).
+
+#### What AiP Enables
+
+1. **Higher element density** -- Reduced per-element footprint allows more elements in a given aperture, or the same element count in a smaller form factor
+2. **Planar 2D arrays** -- Compact AiP modules facilitate dense 2D planar arrays with dual-plane electronic steering
+3. **Reduced interconnect losses** -- Embedded RF routing eliminates PCB trace and connector losses
+4. **Environmental robustness** -- LTCC hermetic packaging protects RF circuitry from moisture and contamination
+
+#### What AiP Costs
+
+1. **Significant NRE** -- Custom LTCC substrate design, fabrication, and qualification is a major non-recurring engineering investment ($100K--$500K range for prototype runs)
+2. **Loss of modularity** -- Individual T/R module replacement is not possible; a failed element requires replacing the entire AiP module
+3. **Custom package design** -- No commercial off-the-shelf AiP exists for the ADAR1000 + ADTR1107 combination
+4. **Thermal constraints** -- LTCC thermal conductivity (~3 W/mK) is lower than aluminum PCB substrates (~200 W/mK), requiring careful thermal via design
+
+#### ADAR1000 SPI Compatibility Concern
+
+The ADAR1000 SPI control interface (3-byte transaction, 2-bit DEV_ADDR, documented in [`04_antenna_beamforming.md`](../02_hardware/04_antenna_beamforming.md#spi-interface) Section 2.2) must be preserved in any AiP solution. Specifically:
+
+- **SPI signal routing:** The ADAR1000 requires SPI clock, MOSI, MISO, and per-device chip select signals routed through the AiP substrate to the embedded beamformer IC
+- **Level shifting:** The current system uses an FPGA-based level shifter (`level_shifter_interface.v`) to translate STM32 3.3V SPI to ADAR1000 1.8V I/O; this function must be preserved or integrated
+- **Firmware impact:** If the AiP uses a different control interface (e.g., I2C, proprietary serial), the entire STM32 firmware driver (`ADAR1000_Manager.cpp`) and FPGA level-shifter interface require redesign
+
+An AiP solution that preserves the ADAR1000 SPI interface requires no firmware changes. An AiP solution using a different beamformer IC or custom ASIC would require complete firmware and FPGA interface redesign.
+
+### 3.4 Feasibility Assessment
+
+| Factor | Assessment | Rating |
+|--------|------------|--------|
+| Integration complexity | Fundamental PCB redesign, custom LTCC substrate, new thermal management | **HIGH** |
+| NRE cost | LTCC packaging is a specialized process; prototype costs $100K--$500K | **HIGH** |
+| Component availability | ADAR1000 and ADTR1107 are commercially available; LTCC fabrication is specialty | **MODERATE** |
+| Technical risk | ADAR1000 + ADTR1107 specific AiP integration has NOT been demonstrated in literature | **HIGH** |
+| Timeline | 12--18 months for design, fabrication, and characterization of prototype AiP | **LONG** |
+| Firmware impact | None if ADAR1000 SPI preserved; complete redesign if different beamformer IC used | **VARIABLE** |
+
+> **Variant Note: AiP Impact by Platform**
+> | | Nexus (AERIS-10N) | Extended (AERIS-10X) |
+> |--|-------|----------|
+> | Miniaturization benefit | **HIGH** -- compact platform benefits most from size reduction | **LOW** -- Extended platform has ample space |
+> | Thermal challenge | **MODERATE** -- ADTR1107 at 1W per element | **HIGH** -- QPA2962 at 10W per element exceeds LTCC thermal limits |
+> | PCB redesign scope | Entire antenna PCB | Slotted waveguide array incompatible with AiP (different antenna technology) |
+> | Recommendation | Primary AiP candidate | AiP not applicable to waveguide array; focus on PA module miniaturization instead |
+
+The Extended variant's slotted waveguide antenna is structurally incompatible with AiP technology (waveguide slots are machined, not printed). AiP miniaturization is therefore primarily relevant to the **Nexus variant** with its PCB-printed patch array.
+
+### 3.5 Recommendations
+
+**Priority ranking:** LOW relative to ADC upgrade (HWRES-04) and array expansion (HWRES-05), which offer more immediate and quantifiable performance gains.
+
+**Key findings:**
+
+1. LTCC-based AiP at X-band is **technically mature** for generic T/R modules, but the specific ADAR1000 + ADTR1107 combination has not been demonstrated in an AiP package
+2. The primary benefit is **form factor reduction** (~30% area, ~28% height), not RF performance improvement. The ~0.5 dB interconnect loss reduction is modest compared to the 8--15 dB transmit power gain from GaN PA upgrade (HWRES-01) or the 36 dB SQNR gain from ADC upgrade (HWRES-04)
+3. AiP is primarily relevant to the **Nexus variant** -- the Extended variant's waveguide antenna is incompatible with AiP technology
+4. **ADAR1000 SPI compatibility** is a critical constraint -- any AiP solution must preserve the existing SPI control interface to avoid firmware and FPGA redesign
+
+**Recommended investigation steps (not implementation specifications):**
+
+1. Contact LTCC fabricators (e.g., Kyocera, TDK, VIA Electronic) for feasibility study with ADAR1000 + ADTR1107 die stack at $\lambda/2 = 14.3~\text{mm}$ element pitch
+2. Evaluate whether commercial beamformer-integrated AiP solutions (e.g., future Analog Devices or Qorvo products) could replace the ADAR1000 + ADTR1107 combination without SPI interface changes
+3. Assess thermal viability: can LTCC thermal vias dissipate 1W (ADTR1107) per element at 14.3 mm pitch without exceeding junction temperature limits?
+4. As a **near-term alternative**, optimize the current PCB layout for element density without full AiP transition -- this may recover 10--15% of the AiP size benefit with minimal NRE
+
+**Position as next-generation option:** AiP miniaturization should be considered for a future AERIS-10 revision (v2.0+) after the higher-priority upgrades (ADC, array expansion, GaN PA) have been evaluated and potentially implemented.
 
 ---
 
