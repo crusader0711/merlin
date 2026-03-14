@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-02-PLAN.md (STM32 firmware documentation)
-last_updated: "2026-03-14T00:21:41.049Z"
+stopped_at: Completed 06-01-PLAN.md (GaN vs SiGe front-end and synthesizer phase noise research)
+last_updated: "2026-03-14T00:45:23.670Z"
 last_activity: 2026-03-14 — Completed 04-01-PLAN.md (FPGA signal processing pipeline)
 progress:
   total_phases: 6
   completed_phases: 4
-  total_plans: 14
-  completed_plans: 14
+  total_plans: 21
+  completed_plans: 16
   percent: 93
 ---
 
@@ -101,6 +101,8 @@ Progress: [█████████░] 86%
 | Phase 04 P01 | 4min | 2 tasks | 2 files |
 | Phase 04 P03 | 5 | 2 tasks | 2 files |
 | Phase 04 P02 | 4 | 1 tasks | 1 files |
+| Phase 05 P02 | 5 | 2 tasks | 2 files |
+| Phase 06 P01 | 5 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -149,6 +151,11 @@ Recent decisions affecting current work:
 - [Phase 04]: FT601 packet: 11 transfers (1 header + 4 range + 4 Doppler + 1 detection + 1 footer) per usb_data_interface.v
 - [Phase 04]: GUI system_frequency default 10e9 flagged as known discrepancy vs canonical 10.5 GHz
 - [Phase 04-02]: SW equation tags start at SW-20, reserving SW-1 through SW-19 for FPGA pipeline (Plan 01)
+- [Phase 05]: Windowed matched filter (Taylor nbar=5) as Priority 1 for pulse compression (0.76 dB loss for 21.7 dB sidelobe improvement)
+- [Phase 05]: M=64 CPI as Priority 1 for range extension (3 dB SNR, 1.19x range, 4-6 BRAMs)
+- [Phase 05]: NLFM PSL limited to -35 to -40 dB by 8-bit DAC (vs theoretical -45 to -50 dB)
+- [Phase 05]: Keystone range migration compensation infeasible on current BRAM budget; segmented integration as alternative
+- [Phase 06]: HW-IMP equation prefix for hardware improvement research; GaN PA advantage is transmit power not NF; ADF4382A is best-in-class synthesizer; ADC quantization floor is Doppler bottleneck
 
 ### Pending Todos
 
@@ -162,6 +169,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T00:18:01.344Z
-Stopped at: Completed 04-02-PLAN.md (STM32 firmware documentation)
+Last session: 2026-03-14T00:45:23.668Z
+Stopped at: Completed 06-01-PLAN.md (GaN vs SiGe front-end and synthesizer phase noise research)
 Resume file: None

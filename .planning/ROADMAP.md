@@ -133,5 +133,5 @@ Phases 1 through 4 execute sequentially. Phases 5 and 6 can execute in parallel 
 | 2. Physics Foundation | 4/4 | Complete   | 2026-03-13 |
 | 3. Hardware Documentation | 5/5 | Complete   | 2026-03-13 |
 | 4. Software Documentation | 3/3 | Complete   | 2026-03-14 |
-| 5. Software Improvement Research | 0/4 | Not started | - |
-| 6. Hardware Improvement Research | 0/3 | Not started | - |
+| 5. Software Improvement Research | 1/4 | In Progress|  |
+| 6. Hardware Improvement Research | 1/3 | In Progress|  |

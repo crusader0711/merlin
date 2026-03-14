@@ -44,17 +44,17 @@
 
 - [ ] **SWRES-01**: CFAR variants survey — CA-CFAR, OS-CFAR, GOCA-CFAR, SOCA-CFAR with false alarm rate, detection probability, computational cost comparison
 - [ ] **SWRES-02**: Clutter rejection research — MTI filtering, Doppler notch filtering, recursive background subtraction, delay-line clutter rejection
-- [ ] **SWRES-03**: Range extension via SNR optimization — coherent integration techniques, longer CPI, non-coherent integration, expected range improvement derivation
+- [x] **SWRES-03**: Range extension via SNR optimization — coherent integration techniques, longer CPI, non-coherent integration, expected range improvement derivation
 - [ ] **SWRES-04**: FPGA pipeline throughput optimization — HLS vs hand-coded Verilog, loop unrolling for FFT/matched filter, multi-bank memory, Artix-7 resource margins
 - [ ] **SWRES-05**: ML-based detection alternatives to CFAR — autoencoder-based detection, CNN range-Doppler detectors, FPGA inference feasibility assessment
-- [ ] **SWRES-06**: Pulse compression improvements — NLFM waveform optimization, sidelobe reduction without SNR loss, chirp memory/DAC feasibility
+- [x] **SWRES-06**: Pulse compression improvements — NLFM waveform optimization, sidelobe reduction without SNR loss, chirp memory/DAC feasibility
 - [ ] **SWRES-07**: Target tracking improvements — IMM-Kalman filter, variational Bayesian IMM, adaptive Kalman for maneuvering targets
 - [ ] **SWRES-08**: Adaptive beamforming research — MVDR/LCMV beamformers, hybrid robust beamforming, real-time FPGA weight computation feasibility
 
 ### HW Improvement Research (HWRES)
 
-- [ ] **HWRES-01**: GaN vs SiGe front-end comparison — output power, noise figure, die size at X-band, comparison to current ADTR1107
-- [ ] **HWRES-02**: Frequency synthesizer phase noise improvements — fractional-N PLL advances, ADF4382 vs competing synthesizers, Doppler floor improvement
+- [x] **HWRES-01**: GaN vs SiGe front-end comparison — output power, noise figure, die size at X-band, comparison to current ADTR1107
+- [x] **HWRES-02**: Frequency synthesizer phase noise improvements — fractional-N PLL advances, ADF4382 vs competing synthesizers, Doppler floor improvement
 - [ ] **HWRES-03**: Antenna-in-Package (AiP) miniaturization — 3D-stacked T/R modules, LTCC implementations, compatibility with ADAR1000+ADTR1107
 - [ ] **HWRES-04**: Higher-resolution ADC options — 14 to 16-bit upgrade, FPGA interface impact, SNR improvement calculation
 - [ ] **HWRES-05**: Antenna array expansion — 16 to 32/64 elements, ADAR1000 cascading, PCB constraints, grating lobe implications
@@ -114,14 +114,14 @@
 | SWDOC-04 | Phase 4 | Complete |
 | SWRES-01 | Phase 5 | Pending |
 | SWRES-02 | Phase 5 | Pending |
-| SWRES-03 | Phase 5 | Pending |
+| SWRES-03 | Phase 5 | Complete |
 | SWRES-04 | Phase 5 | Pending |
 | SWRES-05 | Phase 5 | Pending |
-| SWRES-06 | Phase 5 | Pending |
+| SWRES-06 | Phase 5 | Complete |
 | SWRES-07 | Phase 5 | Pending |
 | SWRES-08 | Phase 5 | Pending |
-| HWRES-01 | Phase 6 | Pending |
-| HWRES-02 | Phase 6 | Pending |
+| HWRES-01 | Phase 6 | Complete |
+| HWRES-02 | Phase 6 | Complete |
 | HWRES-03 | Phase 6 | Pending |
 | HWRES-04 | Phase 6 | Pending |
 | HWRES-05 | Phase 6 | Pending |
