@@ -1221,6 +1221,137 @@ The Opal Kelly XEM8305 (AU15P + FT601) confirms this compatibility in a producti
 
 ---
 
+## 7. Cross-Topic Summary and Recommendations
+
+### 7.1 Dependency Map
+
+The six hardware upgrade topics are not independent. The following dependency relationships determine which upgrades can be pursued alone and which must be paired:
+
+```
+HWRES-06 (FPGA Upgrade)
+    |
+    |--- ENABLES ---> HWRES-04 (ADC Upgrade)
+    |                     [JESD204B transceivers required]
+    |
+    +--- ENABLES ---> Phase 5 SW improvements
+                          [More DSPs, BRAMs, LUTs]
+
+HWRES-04 (ADC Upgrade) + HWRES-06 (FPGA Upgrade)
+    = HIGHEST-IMPACT PAIRED UPGRADE (36 dB SQNR)
+
+HWRES-01 (GaN Front-End)     --- INDEPENDENT ---
+    [Nexus PA upgrade; Extended already has GaN PA]
+
+HWRES-05 (Array Expansion)   --- INDEPENDENT ---
+    [32-element: MODERATE complexity, no other upgrade needed]
+    [64-element: may benefit from FPGA upgrade for more SPI controllers]
+
+HWRES-02 (Synthesizer)       --- DIMINISHING RETURNS ---
+    [ADF4382A already best-in-class; no replacement improves performance]
+
+HWRES-03 (AiP Miniaturization) --- NEXT-GENERATION ---
+    [Fundamental PCB redesign; Nexus-only; HIGH NRE cost]
+```
+
+**Key coupling:** HWRES-04 (ADC upgrade) **cannot** be pursued without HWRES-06 (FPGA upgrade) because the Artix-7 XC7A100T lacks GTH transceivers for JESD204B. Conversely, upgrading only the FPGA without the ADC wastes the new transceiver capability. These two upgrades deliver maximum value only as a **paired investment**.
+
+**Independent upgrades:** HWRES-01 (GaN PA for Nexus) and HWRES-05 (array expansion) can each be pursued independently of the digital back-end upgrades. They affect the analog/RF domain and do not require FPGA or ADC changes.
+
+### 7.2 Priority Ranking
+
+| Rank | HWRES Topic | Impact | Complexity | Dependencies | Timeline | Rationale |
+|------|-------------|--------|------------|-------------|----------|-----------|
+| **1** | **HWRES-04 + HWRES-06** (ADC + FPGA) | **+36.1 dB SQNR** (highest in system) | **HIGH** (new PCB, FPGA, ADC, firmware) | Paired -- must be done together | Medium-term | Single largest improvement; addresses the dominant noise limitation (8-bit quantization floor) |
+| **2** | **HWRES-05** (Array expansion to 32) | **+3.0 dB gain**, 1.41x range | **MODERATE** (2nd SPI bus, wider aperture, more T/R modules) | Independent | Near-term | Well-understood physics, mature components, guaranteed improvement |
+| **3** | **HWRES-01** (GaN front-end for Nexus) | **+8--15 dB** transmit power, 1.6--2.4x range | **MODERATE** (hybrid PA+LNA, 28V supply, thermal management) | Independent (Nexus only; Extended already has GaN) | Near-term | Significant range improvement for Nexus variant; Extended variant architecture provides reference design |
+| **4** | **HWRES-02** (Synthesizer phase noise) | **Negligible** (ADF4382A already best-in-class) | **LOW** (OCXO swap or loop filter tuning) | Independent | Near-term | Phase noise SPNR exceeds ADC quantization floor by 120+ dB; no synthesizer replacement improves system |
+| **5** | **HWRES-03** (AiP miniaturization) | **~0.5 dB** interconnect loss, ~30% area reduction | **HIGH** (custom LTCC, $100K+ NRE) | Independent (Nexus only) | Next-generation | Form factor benefit only; Extended variant waveguide incompatible with AiP |
+
+**Impact quantification summary:**
+
+| Upgrade | Metric | Improvement | vs ADC Upgrade (36 dB) |
+|---------|--------|-------------|----------------------|
+| ADC 8-to-14-bit (HWRES-04) | SQNR | +36.1 dB | Baseline |
+| GaN PA (HWRES-01, Nexus) | Transmit power | +8--15 dB | 22--42% of ADC impact |
+| 32-element array (HWRES-05) | Array gain | +3.0 dB | 8% of ADC impact |
+| Synthesizer (HWRES-02) | Phase noise | ~0 dB net improvement | 0% |
+| AiP (HWRES-03) | Interconnect loss | ~0.5 dB | 1.4% of ADC impact |
+
+### 7.3 Recommended Investigation Roadmap
+
+#### Phase A: Near-Term Investigations
+
+**Timeline:** 0--6 months. Can be pursued with current hardware plus evaluation boards.
+
+1. **Prototype 32-element array on Extended platform** (HWRES-05)
+   - Minimal risk: well-understood scaling, mature ADAR1000 components
+   - Validates dual-SPI bus firmware, measures actual beam pattern vs theoretical
+   - Provides immediate +3 dB gain and 1.41x range improvement
+   - **Deliverable:** Measured beam patterns, SPI timing verification, range improvement validation
+
+2. **Evaluate AD9680 + AU15P on Opal Kelly XEM8305** (HWRES-04 + HWRES-06)
+   - XEM8305 provides pre-validated AU15P + FT601 platform
+   - Connect AD9680 evaluation board via FMC for JESD204B link testing
+   - Port signal processing pipeline to AU15P, verify resource utilization
+   - **Deliverable:** JESD204B link status, resource utilization report, data integrity verification
+
+3. **Characterize analog chain noise floor** (supports HWRES-04 assessment)
+   - Measure actual noise floor at ADC input to determine realized dynamic range improvement
+   - If analog noise exceeds $-86~\text{dBFS}$, the ADC upgrade's realized improvement is less than 36 dB
+   - **Deliverable:** Measured noise floor spectrum, comparison against 8-bit and 14-bit quantization floors
+
+#### Phase B: Medium-Term Development
+
+**Timeline:** 6--18 months. Requires custom PCB design and fabrication.
+
+1. **Custom PCB with AU15P + AD9680** (HWRES-04 + HWRES-06)
+   - Full PCB redesign incorporating UltraScale+ power management, JESD204B reference clocks, and 14-bit data paths
+   - Leverage Phase A evaluation results for resource estimation and clock tree configuration
+   - **Deliverable:** Production-ready PCB design, verified JESD204B operation, validated signal processing pipeline with 14-bit data
+
+2. **32-element array integration** (HWRES-05)
+   - Integrate validated 32-element array (from Phase A prototype) with production radar system
+   - Mechanical and thermal qualification
+   - **Deliverable:** 32-element production array, calibration procedures, validated performance
+
+3. **GaN PA evaluation for Nexus** (HWRES-01)
+   - If Phase A results confirm Nexus range improvement is needed beyond array expansion
+   - Leverage Extended variant's QPA2962 + bias circuitry as reference design
+   - **Deliverable:** Nexus variant with hybrid GaN PA, thermal management solution
+
+#### Phase C: Next-Generation Options
+
+**Timeline:** 18+ months. Requires fundamental platform redesign.
+
+1. **AiP evaluation with LTCC fabricator** (HWRES-03)
+   - Only pursue after higher-priority upgrades (ADC, FPGA, array) have been implemented
+   - Contact Kyocera, TDK, or VIA Electronic for ADAR1000 + ADTR1107 feasibility study
+   - **Deliverable:** LTCC prototype modules, measured RF performance, cost assessment
+
+2. **64-element array feasibility** (HWRES-05 extension)
+   - Requires platform redesign for 900 mm aperture
+   - Quad-SPI bus architecture (4 buses x 4 ADAR1000 devices)
+   - Only relevant for Extended variant (Nexus platform too compact)
+   - **Deliverable:** Mechanical design, SPI firmware architecture, cost-benefit analysis
+
+### 7.4 Open Questions
+
+The following open questions from the Phase 6 research remain unresolved and affect specific upgrade paths:
+
+| # | Question | Affects | Blocking? | Resolution Path |
+|---|----------|---------|-----------|-----------------|
+| 1 | ADTR1107 full specs at 10.5 GHz (PA P1dB, LNA IP3, switching time) | HWRES-01 (GaN comparison baseline) | No -- qualitative conclusions hold | Extract from datasheet PDF in repository |
+| 2 | ADF4382A phase noise at exact offsets from 10.5 GHz carrier | HWRES-02 (Doppler floor validation) | No -- FOM-based estimates show >120 dB margin | Extract from datasheet phase noise plots |
+| 3 | Vivado actual resource utilization vs theoretical estimates | HWRES-06 (AU15P vs AU25P sizing) | Partially -- affects AU15P adequacy determination | Run Vivado synthesis on current design; or use Phase A XEM8305 evaluation |
+| 4 | IF amplifier presence/absence in receive chain | HWRES-04 (analog chain gain assessment) | No -- analog chain re-optimization needed regardless | Board schematic review |
+| 5 | GaN vs SiGe per-element cost at relevant quantities (16--64 units) | HWRES-01 (cost-benefit) | No -- qualitative assessment sufficient for research phase | Vendor quotes (not in scope for documentation) |
+
+**Questions 1 and 2** are documentation-level questions resolvable by extracting datasheet data. They do not block any upgrade decision because the qualitative conclusions (GaN advantage is PA power, not NF; phase noise is not the Doppler bottleneck) hold regardless of the precise numerical values.
+
+**Question 3** partially blocks the AU15P vs AU25P selection. Phase A evaluation on the XEM8305 will resolve this by providing actual synthesis results.
+
+---
+
 ## References
 
 ### Project Documentation
