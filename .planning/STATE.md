@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 05-01-PLAN.md (CFAR variants and clutter rejection research)
-last_updated: "2026-03-14T00:46:22.820Z"
-last_activity: 2026-03-14 — Completed 06-01-PLAN.md (GaN vs SiGe front-end and synthesizer phase noise research)
+stopped_at: Completed 05-04-PLAN.md (target tracking and adaptive beamforming research)
+last_updated: "2026-03-14T00:45:30Z"
+last_activity: 2026-03-14 — Completed 05-04-PLAN.md (target tracking and adaptive beamforming research)
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 21
-  completed_plans: 19
-  percent: 86
+  completed_plans: 20
+  percent: 90
 ---
 
 ---
@@ -82,16 +82,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-13)
 
 **Core value:** Produce engineering-grade documentation capturing the complete AERIS-10 radar system from first-principles physics through hardware to software, so the team can maintain and improve the radar without tribal knowledge.
-**Current focus:** Phase 6 - Hardware Improvement Research (In Progress)
+**Current focus:** Phase 5 - Software Improvement Research (Complete) / Phase 6 - Hardware Improvement Research (In Progress)
 
 ## Current Position
 
-Phase: 6 of 6 (Hardware Improvement Research)
-Plan: 2 of 3 in current phase (1 complete)
+Phase: 5/6 of 6 (Software/Hardware Improvement Research -- parallel)
+Plan: 5/4 complete (Phase 5: 4/4, Phase 6: 1/3)
 Status: Executing
-Last activity: 2026-03-14 — Completed 06-01-PLAN.md (GaN vs SiGe front-end and synthesizer phase noise research)
+Last activity: 2026-03-14 — Completed 05-04-PLAN.md (target tracking and adaptive beamforming research)
 
-Progress: [████████░░] 76%
+Progress: [█████████░] 90%
 
 ## Performance Metrics
 
@@ -121,6 +121,7 @@ Progress: [████████░░] 76%
 | Phase 06 P01 | 5 | 2 tasks | 1 files |
 | Phase 05 P03 | 6 | 2 tasks | 2 files |
 | Phase 05 P01 | 6 | 2 tasks | 2 files |
+| Phase 05 P04 | 6 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -180,6 +181,9 @@ Recent decisions affecting current work:
 - [Phase 05]: CA-CFAR ranked Priority 1; GOCA-CFAR Priority 2 for clutter edges; 2-pulse canceller Priority 1 for clutter rejection
 - [Phase 05]: Clutter measurement campaign prerequisite for both CFAR variant selection and clutter rejection tuning
 - [Phase 05]: Multi-mode CFAR rated MARGINAL (49-66% of available LUT headroom); all other CFAR variants FEASIBLE
+- [Phase 05-04]: Target tracking scoped to Python host (no FPGA constraint); IMM-Kalman ranked Priority 1
+- [Phase 05-04]: MVDR/LCMV on Artix-7 INFEASIBLE (needs 2000+ DSPs vs 151 available); hybrid host-computed FEASIBLE
+- [Phase 05-04]: ADAR1000 quantization limits adaptive null depth to ~-29 dB regardless of algorithm
 
 ### Pending Todos
 
@@ -193,6 +197,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T00:46:22.818Z
-Stopped at: Completed 05-01-PLAN.md (CFAR variants and clutter rejection research)
+Last session: 2026-03-14T00:45:30Z
+Stopped at: Completed 05-04-PLAN.md (target tracking and adaptive beamforming research)
 Resume file: None

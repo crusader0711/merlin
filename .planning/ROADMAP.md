@@ -104,7 +104,7 @@ Plans:
 - [ ] 05-01-PLAN.md — CFAR variants survey and clutter rejection research (SWRES-01, SWRES-02)
 - [ ] 05-02-PLAN.md — Range extension via SNR optimization and pulse compression improvements (SWRES-03, SWRES-06)
 - [ ] 05-03-PLAN.md — FPGA pipeline optimization and ML-based detection alternatives (SWRES-04, SWRES-05)
-- [ ] 05-04-PLAN.md — Target tracking improvements and adaptive beamforming research (SWRES-07, SWRES-08)
+- [x] 05-04-PLAN.md — Target tracking improvements and adaptive beamforming research (SWRES-07, SWRES-08)
 
 ### Phase 6: Hardware Improvement Research
 **Goal**: Engineers have a grounded survey of hardware upgrade paths with impact traced through the documented noise figure chain and RF link budget

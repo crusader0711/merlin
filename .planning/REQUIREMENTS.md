@@ -48,8 +48,8 @@
 - [x] **SWRES-04**: FPGA pipeline throughput optimization — HLS vs hand-coded Verilog, loop unrolling for FFT/matched filter, multi-bank memory, Artix-7 resource margins
 - [x] **SWRES-05**: ML-based detection alternatives to CFAR — autoencoder-based detection, CNN range-Doppler detectors, FPGA inference feasibility assessment
 - [x] **SWRES-06**: Pulse compression improvements — NLFM waveform optimization, sidelobe reduction without SNR loss, chirp memory/DAC feasibility
-- [ ] **SWRES-07**: Target tracking improvements — IMM-Kalman filter, variational Bayesian IMM, adaptive Kalman for maneuvering targets
-- [ ] **SWRES-08**: Adaptive beamforming research — MVDR/LCMV beamformers, hybrid robust beamforming, real-time FPGA weight computation feasibility
+- [x] **SWRES-07**: Target tracking improvements — IMM-Kalman filter, variational Bayesian IMM, adaptive Kalman for maneuvering targets
+- [x] **SWRES-08**: Adaptive beamforming research — MVDR/LCMV beamformers, hybrid robust beamforming, real-time FPGA weight computation feasibility
 
 ### HW Improvement Research (HWRES)
 
@@ -118,8 +118,8 @@
 | SWRES-04 | Phase 5 | Complete |
 | SWRES-05 | Phase 5 | Complete |
 | SWRES-06 | Phase 5 | Complete |
-| SWRES-07 | Phase 5 | Pending |
-| SWRES-08 | Phase 5 | Pending |
+| SWRES-07 | Phase 5 | Complete |
+| SWRES-08 | Phase 5 | Complete |
 | HWRES-01 | Phase 6 | Complete |
 | HWRES-02 | Phase 6 | Complete |
 | HWRES-03 | Phase 6 | Pending |
