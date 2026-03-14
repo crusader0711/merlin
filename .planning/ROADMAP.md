@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Notation & Parameter Standardization** - Establish project-wide symbol table, master parameter table, and cross-reference conventions before any derivations begin (completed 2026-03-13)
 - [x] **Phase 2: Physics Foundation** - Derive FMCW theory, signal models, beamforming, and detection theory from first principles (completed 2026-03-13)
 - [x] **Phase 3: Hardware Documentation** - Document all hardware subsystems with component specs, register maps, and analysis (completed 2026-03-13)
-- [x] **Phase 4: Software Documentation** - Document FPGA pipeline, STM32 firmware, and Python GUI by signal/data flow (completed 2026-03-14)
+- [x] **Phase 4: Software Documentation** - Document FPGA pipeline, STM32 firmware, and Python GUI by signal/data flow (completed 2026-03-14)
 - [ ] **Phase 5: Software Improvement Research** - Survey target detection, signal processing, and FPGA optimization advances with feasibility assessments
 - [ ] **Phase 6: Hardware Improvement Research** - Survey RF, antenna, ADC, and FPGA upgrade paths with noise figure impact analysis
 
@@ -98,12 +98,13 @@ Plans:
   3. FPGA pipeline optimization research (HLS vs hand-coded Verilog, loop unrolling, multi-bank memory) includes resource margin analysis against documented XC7A100T utilization
   4. ML-based detection alternatives, pulse compression improvements (NLFM), target tracking advances (IMM-Kalman), and adaptive beamforming (MVDR/LCMV) each include an FPGA inference feasibility assessment grounded in actual hardware constraints
   5. Every research document opens with a "Current State" section that references the system documentation baseline before surveying the literature
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
-- [ ] 05-03: TBD
+- [ ] 05-01-PLAN.md — CFAR variants survey and clutter rejection research (SWRES-01, SWRES-02)
+- [ ] 05-02-PLAN.md — Range extension via SNR optimization and pulse compression improvements (SWRES-03, SWRES-06)
+- [ ] 05-03-PLAN.md — FPGA pipeline optimization and ML-based detection alternatives (SWRES-04, SWRES-05)
+- [ ] 05-04-PLAN.md — Target tracking improvements and adaptive beamforming research (SWRES-07, SWRES-08)
 
 ### Phase 6: Hardware Improvement Research
 **Goal**: Engineers have a grounded survey of hardware upgrade paths with impact traced through the documented noise figure chain and RF link budget
@@ -131,5 +132,5 @@ Phases 1 through 4 execute sequentially. Phases 5 and 6 can execute in parallel 
 | 2. Physics Foundation | 4/4 | Complete   | 2026-03-13 |
 | 3. Hardware Documentation | 5/5 | Complete   | 2026-03-13 |
 | 4. Software Documentation | 3/3 | Complete   | 2026-03-14 |
-| 5. Software Improvement Research | 0/TBD | Not started | - |
+| 5. Software Improvement Research | 0/4 | Not started | - |
 | 6. Hardware Improvement Research | 0/TBD | Not started | - |
