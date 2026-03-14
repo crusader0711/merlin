@@ -104,7 +104,19 @@
 | $w[n]$ | Window function (discrete) | -- | -- |
 | $\chi(\tau, \nu)$ | Ambiguity function | -- | -- |
 
-## 7. Hardware and Power
+## 6. Software Signal Processing
+
+| Symbol | Definition | Units | IEEE 686 Ref |
+|--------|-----------|-------|--------------|
+| $\Delta\phi_\text{NCO}$ | NCO phase accumulator increment per clock cycle | -- | -- |
+| $G_\text{CIC}$ | CIC filter DC gain, $G_\text{CIC} = D_\text{CIC}^{N_\text{CIC}}$ | -- | -- |
+| $N_\text{seg}$ | Number of overlap-save segments for matched filter | -- | -- |
+| $L_\text{adv}$ | Overlap-save segment advance length | samples | -- |
+| $L_\text{overlap}$ | Overlap-save overlap length | samples | -- |
+| $N_\text{rb}$ | Number of output range bins after decimation | -- | -- |
+| $D_\text{rb}$ | Range bin decimation factor | -- | -- |
+
+## 8. Hardware and Power
 
 | Symbol | Definition | Units | IEEE 686 Ref |
 |--------|-----------|-------|--------------|
@@ -121,7 +133,7 @@
 | $N_\text{BRAM}$ | FPGA Block RAM count | -- | -- |
 | $N_\text{DSP}$ | FPGA DSP48E1 slice count | -- | -- |
 
-## 8. Physical Constants
+## 9. Physical Constants
 
 | Symbol | Definition | Value | Units |
 |--------|-----------|-------|-------|
