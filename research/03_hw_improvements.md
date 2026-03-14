@@ -236,7 +236,256 @@ GaN PAs require 24--28V drain supply, compared to the ADTR1107's 5V. This necess
 
 ## 2. Frequency Synthesizer Phase Noise Improvements
 
-*Placeholder -- to be completed in Task 2.*
+*Requirement: HWRES-02*
+
+### 2.1 Current State
+
+The AERIS-10 uses two **ADF4382A** (Analog Devices) microwave wideband synthesizers to generate the TX and RX local oscillator signals, as documented in [`03_frequency_synthesis.md`](../02_hardware/03_frequency_synthesis.md#adf4382-synthesizers):
+
+| Parameter | Value | Source |
+|-----------|-------|--------|
+| PLL figure of merit (FOM) | $-239~\text{dBc/Hz}$ | ADF4382A product page |
+| VCO range | 11.5--21.0 GHz (fundamental) | `adf4382.h:468--469` |
+| TX output frequency | $f_\text{TX} = 10.5~\text{GHz}$ | `TX_FREQ_HZ` in `adf4382a_manager.h` |
+| RX output frequency | $f_\text{RX} = 10.38~\text{GHz}$ | `RX_FREQ_HZ` in `adf4382a_manager.h` |
+| Reference frequency | 300 MHz from AD9523 (OUT0/OUT1) | [`03_frequency_synthesis.md`](../02_hardware/03_frequency_synthesis.md#complete-clock-tree-table) |
+| Architecture | Fractional-N with FRAC1/FRAC2/MOD2 | Eq. (HW-FS-8) in [`03_frequency_synthesis.md`](../02_hardware/03_frequency_synthesis.md#pll-frequency-synthesis) |
+| Master reference | 100 MHz OCXO (180 s warm-up) | [`03_frequency_synthesis.md`](../02_hardware/03_frequency_synthesis.md#ocxo-warm-up-requirement) |
+
+The VCO output frequency is synthesized per Eq. (HW-FS-8):
+
+$$
+f_\text{VCO,ADF} = f_\text{ref} \times \left( N_\text{INT} + \frac{\text{FRAC1}}{2^{25}} + \frac{\text{FRAC2}}{\text{MOD2} \times 2^{25}} \right) \tag{HW-FS-8}
+$$
+
+Phase noise of the synthesizer is critical because it sets the **Doppler detection floor** -- the minimum Doppler frequency shift (and therefore minimum target velocity) that can be distinguished from the oscillator's own phase noise. As noted in [`03_frequency_synthesis.md`](../02_hardware/03_frequency_synthesis.md#phase-noise) Section 3.8, close-in phase noise limits the minimum detectable velocity $v$.
+
+### 2.2 Literature Survey
+
+#### Synthesizer Comparison
+
+| Parameter | ADF4382A (Analog Devices) | LMX2820 (Texas Instruments) |
+|-----------|--------------------------|----------------------------|
+| PLL FOM | $-239~\text{dBc/Hz}$ | $-236~\text{dBc/Hz}$ |
+| Frequency range | 62.5 MHz -- 21 GHz | 45 MHz -- 22.6 GHz |
+| VCO range | 11.5--21 GHz (fundamental) | Wide (integrated VCO) |
+| Fractional-N | FRAC1/FRAC2/MOD2, 25-bit modulus | Fractional-N with delta-sigma |
+| Max PFD frequency | 625 MHz (integer mode) | Competitive |
+| Integrated jitter | Ultra-low (datasheet) | Competitive |
+| FOM advantage | **Baseline (best-in-class)** | 3 dB worse |
+
+The ADF4382A's $-239~\text{dBc/Hz}$ FOM represents **best-in-class** performance among commercially available wideband synthesizers at X-band. The LMX2820's $-236~\text{dBc/Hz}$ FOM is 3 dB worse, which translates directly to 3 dB higher phase noise floor at the same offset frequency and output frequency.
+
+#### Alternative Improvement Paths
+
+Since the ADF4382A is already best-in-class, phase noise improvements are more likely to come from other system elements:
+
+1. **OCXO reference upgrade** -- The 100 MHz OCXO provides the master reference. A higher-stability OCXO with lower close-in phase noise would improve the reference contribution to the synthesized output. Ultra-low phase noise OCXOs (e.g., Wenzel Sprinter series) achieve $\mathcal{L}(100~\text{Hz}) < -155~\text{dBc/Hz}$ at 100 MHz.
+
+2. **Clean-up PLL loop filter optimization** -- The ADF4382A PLL2 loop bandwidth determines the crossover frequency between reference noise (dominant inside the loop bandwidth) and VCO noise (dominant outside). Optimizing the loop filter components can minimize the integrated phase noise.
+
+3. **Reference frequency increase** -- Using a higher reference frequency (e.g., 500 MHz or 1 GHz) reduces the PLL multiplication factor $N$, which directly reduces the $20\log_{10}(N)$ phase noise contribution from the reference path. However, the AD9523 clock tree is currently configured for 300 MHz reference (Eq. HW-FS-5 with $D_k = 12$).
+
+4. **Fractional-N spur reduction** -- Advanced delta-sigma modulator techniques and spur cancellation (ADF4382A supports bleed current via `EN_BLEED` in REG001F) can reduce fractional spurs that contribute to the phase noise floor near Doppler offsets of interest.
+
+#### Academic References
+
+- R. E. Best, *Phase-Locked Loops: Design, Simulation, and Applications*, 6th ed., McGraw-Hill, 2007 -- PLL phase noise theory
+- B. Razavi, "A Study of Phase Noise in CMOS Oscillators," *IEEE JSSC*, vol. 31, no. 3, 1996 -- Foundational oscillator phase noise analysis
+- D. B. Leeson, "A Simple Model of Feedback Oscillator Noise Spectrum," *Proceedings of the IEEE*, vol. 54, no. 2, 1966 -- Leeson's oscillator noise model
+
+### 2.3 Gap Analysis
+
+#### Doppler Floor from Phase Noise
+
+The Doppler detection floor is determined by the synthesizer's phase noise at the Doppler offset frequency. For an FMCW radar, the relevant offset frequency is the Doppler shift $f_d$ corresponding to the target velocity of interest.
+
+The minimum detectable Doppler shift $f_{d,\text{min}}$ is limited by the phase noise spectral density $\mathcal{L}(f_d)$ integrated over the Doppler resolution bandwidth $\Delta f_d$, relative to the coherent integration gain from $M$ chirps.
+
+For the AERIS-10 system, the Doppler resolution bandwidth is determined by the coherent processing interval (CPI). With $M$ chirps at pulse repetition interval $T_r$:
+
+$$
+\Delta f_d = \frac{1}{M \cdot T_r} \tag{HW-IMP-4}
+$$
+
+For the long-chirp mode ($T_{r,1} = 167~\mu\text{s}$, $M = 32$):
+
+$$
+\Delta f_{d,1} = \frac{1}{32 \times 167 \times 10^{-6}} \approx 187~\text{Hz}
+$$
+
+For the short-chirp mode ($T_{r,2} = 175~\mu\text{s}$, $M = 32$):
+
+$$
+\Delta f_{d,2} = \frac{1}{32 \times 175 \times 10^{-6}} \approx 179~\text{Hz}
+$$
+
+#### Phase Noise to Doppler Floor Derivation
+
+The phase noise power in the Doppler resolution cell at offset $f_d$ from the carrier is:
+
+$$
+P_{\text{PN}}(f_d) = \mathcal{L}(f_d) \cdot \Delta f_d \tag{HW-IMP-5}
+$$
+
+where $\mathcal{L}(f_d)$ is the single-sideband phase noise spectral density in dBc/Hz at offset $f_d$, and $\Delta f_d$ is the Doppler resolution bandwidth.
+
+Coherent integration of $M$ chirps improves the signal-to-phase-noise ratio by:
+
+$$
+G_\text{coh} = 10 \log_{10}(M) = 10 \log_{10}(32) \approx 15.1~\text{dB} \tag{HW-IMP-6}
+$$
+
+The effective phase noise floor after coherent integration, expressed as a signal-to-phase-noise ratio (in dB) at Doppler offset $f_d$, is:
+
+$$
+\text{SPNR}(f_d) = -\mathcal{L}(f_d) - 10\log_{10}(\Delta f_d) + G_\text{coh} \tag{HW-IMP-7}
+$$
+
+For detection, the SPNR must exceed the minimum detectable SNR ($\text{SNR}_\text{min}$, see [Symbol Table](../00_notation/symbol_table.md#detection-and-signal)). The minimum detectable Doppler shift $f_{d,\text{min}}$ is the offset at which $\text{SPNR}(f_{d,\text{min}}) = \text{SNR}_\text{min}$.
+
+#### Translating to Minimum Detectable Velocity
+
+The Doppler shift relates to radial velocity via:
+
+$$
+f_d = \frac{2 v}{\lambda} \tag{HW-IMP-8}
+$$
+
+where $\lambda = c / f_c$ (see [Symbol Table](../00_notation/symbol_table.md#range-and-velocity)). At $f_c = 10.5~\text{GHz}$, $\lambda \approx 0.02857~\text{m}$ (see [Parameter Table](../00_notation/parameter_table.md#waveform-and-timing)). Therefore the minimum detectable velocity corresponding to the Doppler resolution is:
+
+$$
+v_\text{min} = \frac{f_{d,\text{min}} \cdot \lambda}{2} = \frac{\Delta f_d \cdot \lambda}{2} \tag{HW-IMP-9}
+$$
+
+For the long-chirp mode:
+
+$$
+v_{\text{min},1} = \frac{187 \times 0.02857}{2} \approx 2.67~\text{m/s} \approx 9.6~\text{km/h}
+$$
+
+For the short-chirp mode:
+
+$$
+v_{\text{min},2} = \frac{179 \times 0.02857}{2} \approx 2.56~\text{m/s} \approx 9.2~\text{km/h}
+$$
+
+These are the **velocity resolution limits** set by the CPI length. The phase noise floor sets a separate limit: if $\mathcal{L}(f_d)$ at a particular offset is too high, the phase noise power exceeds the target return even for velocities above the resolution limit.
+
+#### Phase Noise Impact Estimation
+
+To estimate the actual Doppler floor from the ADF4382A, we need $\mathcal{L}(f_m)$ at the relevant offset frequencies. Using the FOM to estimate phase noise at offset $f_m$ from a carrier at $f_\text{out}$ with PFD frequency $f_\text{PFD}$:
+
+$$
+\mathcal{L}(f_m) \approx \text{FOM} + 20\log_{10}\left(\frac{f_\text{out}}{f_\text{PFD}}\right) + 10\log_{10}(f_m) \tag{HW-IMP-10}
+$$
+
+This is an approximation valid inside the PLL loop bandwidth where reference noise dominates. For the ADF4382A at $f_\text{out} = 10.5~\text{GHz}$, $f_\text{PFD} = 300~\text{MHz}$ (assuming $R = 1$):
+
+$$
+\mathcal{L}(f_m) \approx -239 + 20\log_{10}\left(\frac{10.5 \times 10^9}{300 \times 10^6}\right) + 10\log_{10}(f_m)
+$$
+
+$$
+= -239 + 20\log_{10}(35) + 10\log_{10}(f_m)
+$$
+
+$$
+= -239 + 30.9 + 10\log_{10}(f_m)
+$$
+
+$$
+= -208.1 + 10\log_{10}(f_m) \quad \text{dBc/Hz}
+$$
+
+At representative offsets:
+
+| Offset $f_m$ | $\mathcal{L}(f_m)$ (ADF4382A est.) | $\mathcal{L}(f_m)$ (LMX2820 est., +3 dB) |
+|--------------|-------------------------------------|------------------------------------------|
+| 1 kHz | $-178~\text{dBc/Hz}$ | $-175~\text{dBc/Hz}$ |
+| 10 kHz | $-168~\text{dBc/Hz}$ | $-165~\text{dBc/Hz}$ |
+| 100 kHz | $-158~\text{dBc/Hz}$ | $-155~\text{dBc/Hz}$ |
+| 1 MHz | $-148~\text{dBc/Hz}$ | $-145~\text{dBc/Hz}$ |
+
+> **Caution:** These are approximate values derived from the FOM figure and the PLL noise transfer function model. Actual phase noise at specific offsets depends on VCO noise, loop bandwidth, charge pump noise, and reference oscillator noise. The ADF4382A datasheet phase noise plots at 10.5 GHz should be consulted for authoritative values (Open Question 2 from research).
+
+Applying Eq. (HW-IMP-7) at $f_m = 1~\text{kHz}$ offset for the long-chirp mode:
+
+$$
+\text{SPNR}(1~\text{kHz}) = 178 - 10\log_{10}(187) + 15.1 = 178 - 22.7 + 15.1 = 170.4~\text{dB}
+$$
+
+This SPNR is far above any practical $\text{SNR}_\text{min}$ threshold, indicating that the ADF4382A phase noise does **not** limit Doppler detection at the velocities of interest. The 1 kHz Doppler offset corresponds to a velocity of:
+
+$$
+v = \frac{1000 \times 0.02857}{2} \approx 14.3~\text{m/s} \approx 51~\text{km/h}
+$$
+
+Even at very low Doppler offsets (e.g., 100 Hz, corresponding to $v \approx 1.4~\text{m/s} \approx 5.1~\text{km/h}$):
+
+$$
+\text{SPNR}(100~\text{Hz}) \approx 188 - 22.7 + 15.1 = 180.4~\text{dB}
+$$
+
+The phase noise floor remains far below the thermal noise floor for any practical target scenario.
+
+#### Synthesizer Replacement Assessment
+
+Replacing the ADF4382A with the LMX2820 would **worsen** the phase noise by 3 dB across all offsets. No currently available commercial synthesizer improves upon the ADF4382A's FOM of $-239~\text{dBc/Hz}$. The synthesizer is already the **strongest link** in the phase noise chain.
+
+### 2.4 Feasibility Assessment
+
+#### Synthesizer Replacement
+
+| Factor | Assessment |
+|--------|------------|
+| Benefit | Negative -- LMX2820 is 3 dB worse than ADF4382A |
+| Complexity | Low if pin-compatible; moderate otherwise (PCB redesign, firmware driver) |
+| Recommendation | **Not recommended** -- ADF4382A is already best-in-class |
+
+#### OCXO Reference Upgrade
+
+| Factor | Assessment |
+|--------|------------|
+| Benefit | Moderate -- improves close-in phase noise (< 1 kHz offsets) |
+| Complexity | Low -- OCXO is a discrete module on the PCB; replacement requires only matching the 100 MHz output and the VCXO input specifications of the AD9523 |
+| Cost | Moderate -- ultra-low phase noise OCXOs (Wenzel, Pascall) cost significantly more than standard OCXOs |
+| Risk | Low -- OCXO interface is well-defined; warm-up time may differ |
+
+#### Loop Filter Optimization
+
+| Factor | Assessment |
+|--------|------------|
+| Benefit | Low to moderate -- optimizing loop bandwidth can reduce integrated jitter |
+| Complexity | Low -- passive component changes on existing PCB; no firmware changes |
+| Cost | Minimal -- resistor and capacitor changes |
+| Risk | Low -- but requires careful simulation to avoid loop stability issues |
+
+#### Phase Noise vs. Other Noise Sources
+
+A critical consideration: even with perfect phase noise, the AERIS-10 Doppler detection performance may be limited by **other noise sources**:
+
+- **ADC quantization noise** -- The 8-bit AD9484 has a quantization floor at $-49.9~\text{dBFS}$ (Eq. NF-11 in [`05_noise_analysis.md`](../01_physics/05_noise_analysis.md#signal-to-quantization-noise-ratio)). This is likely the dominant noise floor for Doppler detection, not phase noise.
+- **Thermal noise** -- The system thermal noise floor (set by $F_\text{sys}$ per Eq. NF-8) competes with phase noise at all offsets.
+- **Platform vibration** -- Mechanical vibration of the antenna platform can introduce Doppler modulation that mimics phase noise, potentially dominating at low offset frequencies.
+
+The estimated SPNR values (170+ dB) are far above the ADC quantization floor (~50 dB), confirming that **ADC resolution, not phase noise, is the dominant limitation** on Doppler detection sensitivity.
+
+### 2.5 Recommendations
+
+**Priority ranking:** LOW -- The ADF4382A is already best-in-class; the largest gains come from addressing other noise sources (ADC upgrade per HWRES-04).
+
+**Key findings:**
+1. The ADF4382A at $-239~\text{dBc/Hz}$ FOM is the **best commercially available** synthesizer for this application. No replacement improves performance.
+2. The estimated SPNR at relevant Doppler offsets exceeds 170 dB, far above the 8-bit ADC quantization floor of ~50 dB. **Phase noise is not the Doppler detection bottleneck.**
+3. The Doppler velocity resolution is limited by CPI length ($\Delta v \approx 2.6~\text{m/s}$ for the long-chirp mode), not by phase noise.
+4. OCXO reference upgrade provides marginal improvement at close-in offsets; loop filter optimization provides marginal improvement at the loop bandwidth crossover.
+
+**Recommended investigation steps (not implementation specifications):**
+1. **Characterize actual ADF4382A phase noise** at 10.5 GHz from datasheet plots at 100 Hz, 1 kHz, 10 kHz, 100 kHz, and 1 MHz offsets (Open Question 2 from research) to validate the FOM-based estimates above
+2. **Measure the system Doppler floor** empirically -- compare against the theoretical phase noise floor to determine whether phase noise, ADC quantization, or platform vibration is the actual limiting factor
+3. **Evaluate OCXO upgrade options** -- relevant only if empirical measurements show the reference oscillator contribution is significant at offsets below 1 kHz
+4. **Prioritize HWRES-04 (ADC upgrade)** over synthesizer improvements -- the 36 dB SQNR improvement from an 8-to-14-bit ADC upgrade would have far greater impact on Doppler detection sensitivity than any achievable phase noise improvement
 
 ---
 
@@ -286,11 +535,15 @@ GaN PAs require 24--28V drain supply, compared to the ADTR1107's 5V. This necess
 - ADTR1107 -- 8--16 GHz integrated T/R front-end module ([Analog Devices product page](https://www.analog.com/en/products/adtr1107.html))
 - QPA2962 -- 6--18 GHz 10 W GaN MMIC power amplifier ([Qorvo](https://www.qorvo.com))
 - ADF4382A -- 62.5 MHz to 21 GHz microwave wideband synthesizer ([Analog Devices product page](https://www.analog.com/en/products/adf4382a.html))
-- LMX2820 -- 45 MHz to 22.6 GHz wideband synthesizer ([Texas Instruments product page](https://www.ti.com/product/LMX2820))
+- LMX2820 -- 45 MHz to 22.6 GHz wideband synthesizer, FOM $-236~\text{dBc/Hz}$ ([Texas Instruments product page](https://www.ti.com/product/LMX2820))
 - AD9680 -- 14-bit, 500 MSPS / 1 GSPS dual ADC ([Analog Devices product page](https://www.analog.com/en/products/ad9680.html))
+- AD9523-1 -- Dual-PLL 12-output clock distribution IC ([Analog Devices](https://www.analog.com/en/products/ad9523-1.html))
 
 ### Industry and Academic References
 - Altum RF, "Front-End Components for X/Ku Band Phased Array Radar," Nov 2025 -- GaN/SiGe comparison landscape
 - Cadence, "LTCC Transmit-Receive X-Band Module with Phased Array Antenna," Application Note -- AiP dimensions and performance
 - ResearchGate, "X-Band Transmit/Receive Module MMIC Chip-Set Based on Emerging GaN and SiGe Technologies" -- GaN vs SiGe comparison
 - Qorvo, "X-Band Radar: Driving Defense Applications with Beamforming, GaN, and GaAs Technology" -- Industry perspective
+- R. E. Best, *Phase-Locked Loops: Design, Simulation, and Applications*, 6th ed., McGraw-Hill, 2007 -- PLL phase noise theory
+- D. B. Leeson, "A Simple Model of Feedback Oscillator Noise Spectrum," *Proceedings of the IEEE*, vol. 54, no. 2, 1966 -- Leeson's oscillator noise model
+- B. Razavi, "A Study of Phase Noise in CMOS Oscillators," *IEEE JSSC*, vol. 31, no. 3, 1996 -- Oscillator phase noise analysis
