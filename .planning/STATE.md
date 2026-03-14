@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-03-PLAN.md (USB protocol and Python GUI)
-last_updated: "2026-03-14T00:17:35.354Z"
+stopped_at: Completed 04-02-PLAN.md (STM32 firmware documentation)
+last_updated: "2026-03-14T00:18:01.345Z"
 last_activity: 2026-03-14 — Completed 04-01-PLAN.md (FPGA signal processing pipeline)
 progress:
   total_phases: 6
@@ -100,6 +100,7 @@ Progress: [█████████░] 86%
 | Phase 03 P05 | 5 | 2 tasks | 2 files |
 | Phase 04 P01 | 4min | 2 tasks | 2 files |
 | Phase 04 P03 | 5 | 2 tasks | 2 files |
+| Phase 04 P02 | 4 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -147,6 +148,7 @@ Recent decisions affecting current work:
 - [Phase 04]: Magic number derivations include numerical verification as exception to anti-pattern 5.1
 - [Phase 04]: FT601 packet: 11 transfers (1 header + 4 range + 4 Doppler + 1 detection + 1 footer) per usb_data_interface.v
 - [Phase 04]: GUI system_frequency default 10e9 flagged as known discrepancy vs canonical 10.5 GHz
+- [Phase 04-02]: SW equation tags start at SW-20, reserving SW-1 through SW-19 for FPGA pipeline (Plan 01)
 
 ### Pending Todos
 
@@ -160,6 +162,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T00:17:35.352Z
-Stopped at: Completed 04-03-PLAN.md (USB protocol and Python GUI)
+Last session: 2026-03-14T00:18:01.344Z
+Stopped at: Completed 04-02-PLAN.md (STM32 firmware documentation)
 Resume file: None

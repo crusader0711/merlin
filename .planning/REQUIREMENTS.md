@@ -36,7 +36,7 @@
 ### Software Documentation (SWDOC)
 
 - [x] **SWDOC-01**: FPGA signal processing pipeline — DDC, CIC decimation, matched filter, 1024-pt FFT, CFAR documented by signal flow
-- [ ] **SWDOC-02**: STM32 firmware documentation — initialization sequence, SPI/I2C device addresses, power-on/off sequences, peripheral config
+- [x] **SWDOC-02**: STM32 firmware documentation — initialization sequence, SPI/I2C device addresses, power-on/off sequences, peripheral config
 - [x] **SWDOC-03**: Python GUI documentation — USB protocol, RadarTarget dataclass, DBSCAN parameters, Kalman state model, map rendering (V6 only)
 - [x] **SWDOC-04**: USB interface protocol — FT601 command/data format, packet structure, RadarSettings.parseFromUSB(), streaming protocol
 
@@ -109,7 +109,7 @@
 | HDWR-08 | Phase 3 | Complete |
 | HDWR-09 | Phase 3 | Complete |
 | SWDOC-01 | Phase 4 | Complete |
-| SWDOC-02 | Phase 4 | Pending |
+| SWDOC-02 | Phase 4 | Complete |
 | SWDOC-03 | Phase 4 | Complete |
 | SWDOC-04 | Phase 4 | Complete |
 | SWRES-01 | Phase 5 | Pending |
