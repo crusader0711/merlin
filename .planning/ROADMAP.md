@@ -130,6 +130,6 @@ Phases 1 through 4 execute sequentially. Phases 5 and 6 can execute in parallel 
 | 1. Notation & Parameter Standardization | 1/2 | Executing | - |
 | 2. Physics Foundation | 4/4 | Complete   | 2026-03-13 |
 | 3. Hardware Documentation | 5/5 | Complete   | 2026-03-13 |
-| 4. Software Documentation | 0/3 | Not started | - |
+| 4. Software Documentation | 1/3 | In Progress|  |
 | 5. Software Improvement Research | 0/TBD | Not started | - |
 | 6. Hardware Improvement Research | 0/TBD | Not started | - |

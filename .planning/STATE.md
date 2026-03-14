@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-05-PLAN.md (timing budget and GPS/IMU transforms)
-last_updated: "2026-03-13T23:58:17.845Z"
+stopped_at: Completed 04-01-PLAN.md (FPGA signal processing pipeline)
+last_updated: "2026-03-14T00:16:43.843Z"
 last_activity: 2026-03-14 — Completed 03-05-PLAN.md (timing budget and GPS/IMU transforms)
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 11
-  completed_plans: 11
+  total_plans: 14
+  completed_plans: 12
 ---
 
 ---
@@ -50,16 +50,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-13)
 
 **Core value:** Produce engineering-grade documentation capturing the complete AERIS-10 radar system from first-principles physics through hardware to software, so the team can maintain and improve the radar without tribal knowledge.
-**Current focus:** Phase 3 - Hardware Documentation (Complete)
+**Current focus:** Phase 4 - Software Documentation (In Progress)
 
 ## Current Position
 
-Phase: 3 of 6 (Hardware Documentation)
-Plan: 5 of 5 in current phase (5 complete)
+Phase: 4 of 6 (Software Documentation)
+Plan: 1 of 3 in current phase (1 complete)
 Status: Executing
-Last activity: 2026-03-14 — Completed 03-05-PLAN.md (timing budget and GPS/IMU transforms)
+Last activity: 2026-03-14 — Completed 04-01-PLAN.md (FPGA signal processing pipeline)
 
-Progress: [██████████] 100%
+Progress: [█████████░] 86%
 
 ## Performance Metrics
 
@@ -82,6 +82,7 @@ Progress: [██████████] 100%
 
 *Updated after each plan completion*
 | Phase 03 P05 | 5 | 2 tasks | 2 files |
+| Phase 04 P01 | 4min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -124,6 +125,9 @@ Recent decisions affecting current work:
 - [Phase 03]: FPGA pipeline latency values are theoretical estimates pending Vivado timing reports
 - [Phase 03]: Complementary filter uses Euler angles (not quaternions) despite q[4] array being initialized in firmware
 - [Phase 03]: Flat-Earth approximation valid for GPS coordinate transform at AERIS-10 detection ranges (< 20 km)
+- [Phase 04]: Threshold detection documented honestly as placeholder, not true CFAR, despite CFAR variable names in source
+- [Phase 04]: Signal-flow documentation organization (ADC to USB) chosen over module-by-module per research recommendation
+- [Phase 04]: Magic number derivations include numerical verification as exception to anti-pattern 5.1
 
 ### Pending Todos
 
@@ -137,6 +141,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T23:53:46.662Z
-Stopped at: Completed 03-05-PLAN.md (timing budget and GPS/IMU transforms)
+Last session: 2026-03-14T00:16:43.841Z
+Stopped at: Completed 04-01-PLAN.md (FPGA signal processing pipeline)
 Resume file: None
