@@ -1,144 +1,224 @@
-# AERIS-10: Open Source Pulse Linear Frequency Modulated Phased Array Radar
+<!--
+  MERLIN · Obsidian Forged Systems
+  Phased Array Radar · RF Engineering · FPGA Signal Processing · Systems Documentation
+  Template: OFS-README-TPL v1.0
+-->
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Status: Alpha](https://img.shields.io/badge/Status-Alpha-orange)](https://github.com/NawfalMotii79/PLFM_RADAR)
-[![Frequency: 10.5GHz](https://img.shields.io/badge/Frequency-10.5GHz-blue)](https://github.com/NawfalMotii79/PLFM_RADAR))
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/NawfalMotii79/PLFM_RADAR/pulls)
+<div align="center">
+  <img src="./assets/merlin_banner.png" width="880" alt="MERLIN — Obsidian Forged Systems" />
+</div>
 
-![AERIS-10 Radar System](8_Utils/3fb1dabf-2c6d-4b5d-b471-48bc461ce914.jpg)
+<br/>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Status-ACTIVE-39FF14?style=for-the-badge&labelColor=1a1a1a" alt="Status" />
+  <img src="https://img.shields.io/badge/Version-v0.9.5-FF6B00?style=for-the-badge&labelColor=1a1a1a" alt="Version" />
+  <img src="https://img.shields.io/badge/Phase-V%26V-FF6B00?style=for-the-badge&labelColor=1a1a1a" alt="Phase" />
+  <img src="https://img.shields.io/badge/License-MIT-1a1a1a?style=for-the-badge&labelColor=000000" alt="License" />
+</p>
 
-AERIS-10 is an open-source, low-cost 10.5 GHz phased array radar system featuring Pulse Linear Frequency Modulated (LFM) modulation. Available in two versions (3km and 20km range), it's designed for researchers, drone developers, and serious SDR enthusiasts who want to explore and experiment with phased array radar technology.
+---
 
-![AERIS-10 Radar System](8_Utils/Antenna_Array.jpg)
+## Abstract
 
-## 📡 Overview
+The AERIS-10 X-band (10.5 GHz) PLFM phased array radar is a fully operational open-hardware system whose engineering knowledge existed only as tribal knowledge and scattered source files, making maintenance, debugging, and upgrade decisions dependent on individual memory rather than auditable documentation. MERLIN produces an engineering-grade documentation and research corpus for the complete system — a layered stack running from a canonical notation/parameter baseline through first-principles physics derivations (FMCW theory, LFM waveforms, beamforming, CFAR detection, cascaded noise figure), hardware subsystem documentation (RF front-end, frequency synthesis, FPGA board, power management, timing budget), and software documentation (FPGA DSP pipeline, STM32 firmware, Python GUI, USB protocol), capped by eight improvement research surveys evaluated against the documented baseline. The corpus is strictly layered and cross-reference enforced: no derivation may define a numerical value outside the master parameter table, and no research survey references a subsystem that is not yet documented — eliminating the notation-drift failure mode that kills multi-document engineering sets. All six phases (21 plans) are complete, including resolution of four parameter inconsistencies discovered across firmware, FPGA, GUI, and legacy documentation (e.g., a 10.0 vs 10.5 GHz center-frequency conflict traced to a stale GUI default).
 
-The AERIS-10 project aims to democratize radar technology by providing a fully open-source, modular, and hackable radar system. Whether you're a university researcher, a drone startup, or an advanced maker, AERIS-10 offers a platform for experimenting with beamforming, pulse compression, Doppler processing, and target tracking.
+> **Design intent:** A radar the engineering team can maintain, debug, and extend from the documentation alone — zero tribal knowledge required.
 
-## 🔬 Key Features
+---
 
-- **Open Source Hardware & Software** - Complete schematics, PCB layouts, firmware, and software available
-- **Dual Version Availability**:
-  - **AERIS-10N (Nexus)**: 3km range with 8x16 patch antenna array
-  - **AERIS-10X (Extended)**: 20km range with 32x16 dielectric-filled slotted waveguide array
-- **Full Electronic Beam Steering** - ±45° electronic steering in elevation and azimuth
-- **Advanced Signal Processing** - On-board FPGA handles pulse compression, Doppler FFT, MTI, and CFAR
-- **Python GUI** - User-friendly interface with map integration
-- **GPS/IMU Integration** - Real-time position and attitude correction
-- **Modular Design** - Separate power management, frequency synthesis, and RF boards
+## Project Dashboard
 
-## 🏗️ System Architecture
+<div align="center">
 
-![AERIS-10 Radar System](8_Utils/RADAR_V6.jpg)
+| Metric | Target | Current | Δ |
+|:-------|:------:|:-------:|:--:|
+| **Schedule** — Milestone v1.0 | 2026-03 | 95% complete | ON_TRACK |
+| **Documentation Phases** | 6 | 6 complete | ON_TRACK |
+| **Plans Executed** | 21 | 21 | ON_TRACK |
+| **Parameter Conflicts Resolved** | 4 | 4 | ON_TRACK |
+| **Cross-Reference Consistency Pass** | 100% | Pending final V&V | — |
+| **Open Risks (High)** | 0 | 1 | — |
 
-### Hardware Components
+</div>
 
-The AERIS-10 main sub-systems are:
+---
 
-- **Power Management Board** - Supplies all necessary voltage levels to the electronics components with proper filtering and sequencing (sequencing ensured by the microcontroller)
+## Scope & Objectives
 
-- **Frequency Synthesizer Board** - Uses a high-performance Low Jitter Clock Generator (AD9523-1) that supplies phase-aligned clock references for:
-  - RX and TX Frequency Synthesizers (ADF4382)
-  - DAC
-  - ADC
-  - FPGA
+**In scope**
 
-- **Main Board** containing:
-  - **DAC** - Generates the RADAR Chirps
-  - **2x Microwave Mixers (LT5552)** - For up-conversion and IF-down-conversion
-  - **4x 4-Channel Phase Shifters (ADAR1000)** - For RX and TX chain beamforming
-  - **16x Front End Chips (ADTR1107)** - Used for both Low Noise Amplifying (RX) and Power Amplifying (TX) stages
-  - **XC7A100T FPGA** - Handles RADAR Signal Processing:
-    - PLFM Chirps generation via the DAC
-    - Raw ADC data read
-    - Automatic Gain Control (AGC)
-    - I/Q Baseband Down-Conversion
-    - Decimation
-    - Filtering
-    - Forward FFT
-    - Pulse Compression
-    - Doppler, MTI and CFAR processing
-    - USB Interface
-  - **STM32F746xx Microcontroller** - Used for:
-    - Power-up and power-down sequencing (see Power Management Excel File)
-    - FPGA communication
-    - Setup and Interface with:
-      - Clock Generator (AD9523-1)
-      - 2x Frequency Synthesizers (ADF4382)
-      - 4x 4-Channel Phase Shifters (ADAR1000) for RADAR pulse sequencing
-      - 2x ADS7830 ADCs (on Power Amplifier Boards) for Idq measurement
-      - 2x DAC5578 (on Power Amplifier Boards) for Vg control
-      - GPS module for GUI map centering
-      - GY-85 IMU for pitch/roll correction of target coordinates
-      - BMP180 Barometer
-      - Stepper Motor
-      - 8x ADS7830 Temperature Sensors for cooling fan control
-      - RF switches
+- Document all software subsystems by signal/data flow: FPGA Verilog pipeline (DDC → CIC decimation → matched filter → 1024-pt FFT → CFAR), STM32F746 firmware, Python/Tkinter GUI (DBSCAN clustering, Kalman tracking), and FT601 USB 3.0 protocol
+- Document all hardware subsystems with component specs, register maps, timing and power budgets: RF front-end, frequency synthesis, antenna/beamforming, FPGA board, power management, GPS/IMU transforms
+- Derive system physics from first principles with full step-by-step derivations: FMCW theory with range-Doppler coupling, LFM waveform model, 16-element array factor, Neyman-Pearson → CFAR detection theory, cascaded noise figure, antenna calibration
+- Survey software improvements with feasibility assessments: CFAR variants, clutter rejection, ML-based detection, pulse compression, FPGA optimization, target tracking, adaptive beamforming
+- Survey hardware upgrade paths with noise-figure impact analysis: GaN vs SiGe front-ends, synthesizer phase noise, ADC upgrade, FPGA upgrade, range extension
+- Enforce project-wide notation (IEEE 686-2024) and a single canonical parameter table across all documents
 
-- **16x Power Amplifier Boards** - Used only for AERIS-10E version, featuring 10Watt QPA2962 GaN amplifier for extended range
+**Explicitly out of scope**
 
-- **Antenna Arrays**:
-  - **AERIS-10N (Nexus)** - 8x16 patch antenna array
-  - **AERIS-10X (Extended)** - 32x16 dielectric-filled slotted waveguide antenna array
+- Implementation of any surveyed improvement — this repository is documentation and research only
+- User manuals or operator guides — audience is the engineering team, not end users
+- Regulatory/compliance documentation (EMC, safety) and marketing material
 
-- **Miscellaneous Components**:
-  - Slip-Ring
-  - Stepper Motor and drivers
-  - Cooling Fans
-  - Enclosure) 
+**Success criteria** — the project is *done* when: an engineer with no prior AERIS-10 exposure can trace any signal processing operation from first-principles physics through hardware component to software implementation using only the documents in this repository, with every symbol and parameter resolving to the canonical tables.
 
+---
 
-### Processing Pipeline
+## System Architecture
 
-1. **Waveform Generation** - DAC creates LFM chirps
-2. **Up/Down Conversion** - LT5552 mixers handle frequency translation
-3. **Beam Steering** - ADAR1000 phase shifters control 16 elements
-4. **Signal Processing (FPGA)**:
-   - Raw ADC data capture
-   - I/Q baseband down-conversion
-   - Decimation & filtering (CIC/FIR)
-   - Pulse compression
-   - Doppler FFT processing
-   - MTI & CFAR detection
-5. **System Management (STM32)**:
-   - Power sequencing
-   - Peripheral configuration
-   - GPS/IMU integration
-   - Stepper motor control
-6. **Visualization (Python GUI)**:
-   - Real-time target plotting
-   - Map integration
-   - Radar control interface
+The repository mirrors the system's layered dependency structure — each documentation layer assigns concrete values to the abstractions of the layer above it:
 
-![AERIS-10 Radar System](9_Firmware/9_3_GUI/GUI_V6.gif)
+```text
+┌─────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│  00_notation     │────▶│  01_physics      │────▶│  02_hardware      │
+│  Symbol/param    │     │  First-principles│     │  Component specs, │
+│  canonical tables│     │  derivations     │     │  register maps    │
+└─────────────────┘     └──────────────────┘     └──────────────────┘
+        │                        │                        │
+        ▼                        ▼                        ▼
+┌─────────────────┐     ┌──────────────────┐
+│  03_software     │────▶│  04_research     │
+│  FPGA/STM32/GUI  │     │  8 improvement   │
+│  by data flow    │     │  surveys vs.     │
+└─────────────────┘     │  documented base │
+                        └──────────────────┘
+```
 
-## 📊 Technical Specifications
+**Documented system (AERIS-10):**
 
-| Parameter | AERIS-10N (Nexus) | AERIS-10X (Extended) |
-|-----------|-------------------|----------------------|
-| **Frequency** | 10.5 GHz | 10.5 GHz |
-| **Max Range** | 3 km | 20 km |
-| **Antenna** | 8x16 Patch Array | 32x16 Slotted Waveguide |
-| **Beam Steering** | Electronic (±45°) | Electronic (±45°) |
-| **Mechanical Scan** | 360° (stepper motor) | 360° (stepper motor) |
-| **Output Power** | ~1Wx16 | 10Wx16 (GaN amplifier) |
-| **Processing** | FPGA + STM32 | FPGA + STM32 |
+| Layer | Component | Interface / Protocol | Notes |
+|:------|:----------|:---------------------|:------|
+| Waveform | DAC + LT5552 mixers | Analog IF / X-band | LFM chirp generation, up/down conversion |
+| Beamforming | 4× ADAR1000 + 16× ADTR1107 | SPI (STM32-configured) | ±45° electronic steering, az + el |
+| Frequency synthesis | AD9523-1 + 2× ADF4382 | SPI / phase-aligned clocks | Phase noise is the dominant coherence constraint |
+| Digitization | AD9484 14-bit ADC | 400 MHz parallel → FPGA | ADC rate anchors decimation chain design |
+| Signal processing | XC7A100T Artix-7 FPGA | FT601 USB 3.0 to host | DDC → CIC → matched filter → FFT → Doppler/MTI/CFAR |
+| System control | STM32F746 | SPI/I²C to all peripherals | Power sequencing, GPS/IMU, thermal, stepper |
+| Visualization | Python/Tkinter GUI | USB 3.0 | DBSCAN clustering, Kalman tracking, map overlay |
 
-## 🚀 Getting Started
+---
 
-### Prerequisites
+## Dependencies & Environment
 
-- Basic understanding of radar principles
-- Experience with PCB assembly (for hardware build)
-- Python 3.8+ for the GUI software
-- FPGA development tools (Vivado) for signal processing modifications
+### Runtime / Software
 
-### Hardware Assembly
+| Dependency | Version | Purpose | Pinned? |
+|:-----------|:-------:|:--------|:-------:|
+| Python | 3.8+ | GUI, utility scripts, radar equation tools | ⚠️ floating |
+| Vivado | 2022.x+ | FPGA pipeline modification/rebuild | ⚠️ floating |
+| STM32CubeIDE | Latest | Firmware builds | ⚠️ floating |
+| KaTeX-capable renderer | — | Physics derivations render inline math | ✅ (GitHub native) |
 
-1. **Order PCBs**: All Gerber files are available in `/4_Schematics and Boards Layout`
-2. **Source Components**: Bill of materials (BOM) in `/4_Schematics and Boards Layout/4_7_Production Files`
-3. **Assembly**: Follow the assembly guide in `/10_docs/assembly_guide.md`
-4. **Antenna**: Choose appropriate array for your version
-5. **Enclosure**: 3D printable files in `/10_docs/Hardware/Enclosure`
+### Hardware / Physical (documented baseline)
 
+| Item | Spec | Qty | Source | Notes |
+|:-----|:-----|:---:|:-------|:------|
+| FPGA | Xilinx XC7A100T Artix-7 | 1 | AMD/Xilinx | Resource utilization documented in 02_hardware |
+| MCU | STM32F746xx | 1 | ST | Power sequencing is safety-critical path |
+| Beamformer | ADAR1000 (4-ch) | 4 | ADI | Phase/amplitude cal theory in 01_physics |
+| Front-end | ADTR1107 | 16 | ADI | LNA/PA per element |
+| PA (Extended) | QPA2962 GaN, 10 W | 16 | Qorvo | AERIS-10X only; thermal path documented |
+| ADC | AD9484, 14-bit 400 MHz | 1 | ADI | Upgrade path surveyed in 04_research |
+
+### Environmental Requirements
+
+- **Power:** Sequenced multi-rail (STM32-enforced); power budget documented in `02_hardware/08_power_budget.md`
+- **Network:** Fully offline-capable; corpus is plain Markdown + local assets, zero external calls
+- **Thermal / Enclosure:** 8× temperature sensors drive fan control; GaN PA thermal constraints documented
+- **RF / EMI:** X-band (10.5 GHz) emitter — operation subject to local spectrum authorization; documentation itself carries no RF risk
+- **Security posture:** All content local-first; no telemetry, no build-time network dependencies
+
+---
+
+## Milestones & Roadmap
+
+| ID | Milestone | Exit Criteria | Target | Status |
+|:--:|:----------|:--------------|:------:|:------:|
+| M1 | Notation & Parameter Standardization | IEEE 686-2024 symbol table + canonical parameter table for both variants; 4 codebase inconsistencies resolved | 2026-03-13 | ✅ |
+| M2 | Physics Foundation | FMCW, LFM, beamforming, CFAR, noise figure, calibration derived from first principles | 2026-03-13 | ✅ |
+| M3 | Hardware Documentation | All 9 subsystem docs with register maps, timing + power budgets | 2026-03-13 | ✅ |
+| M4 | Software Documentation | FPGA pipeline, STM32 firmware, GUI, USB protocol documented by data flow | 2026-03-14 | ✅ |
+| M5 | Software Improvement Research | 8 surveys w/ feasibility vs documented baseline | 2026-03-14 | ✅ |
+| M6 | Hardware Improvement Research | RF/ADC/FPGA upgrade paths w/ noise figure impact | 2026-03-14 | ✅ |
+| M7 | v1.0 Cross-Reference V&V | Every symbol/parameter/equation reference resolves; consistency pass clean | TBD | 🟡 |
+
+---
+
+## Risk Register
+
+| ID | Risk | L | C | Score | Mitigation | Owner | Status |
+|:--:|:-----|:-:|:-:|:-----:|:-----------|:-----:|:------:|
+| R1 | If upstream hardware (AERIS-10 codebase/PCB) diverges after mirror, then documentation silently describes a stale system, resulting in wrong maintenance decisions | 3 | 4 | 12 | Pin documented baseline to upstream commit hash in changelog; diff-review upstream on any hardware change before citing docs | OFS | Open |
+| R2 | If vendor datasheets in `7_Components...` (63 MB) carry redistribution restrictions, then public mirror creates IP exposure, resulting in takedown or license conflict | 3 | 3 | 9 | Audit datasheet licenses; replace restricted PDFs with links + local retention; consider private visibility until cleared | OFS | Open |
+| R3 | If known codebase defects flagged in parameter table (e.g., GUI `system_frequency = 10e9`) remain unpatched, then doc-vs-code mismatch persists, resulting in operator confusion | 4 | 2 | 8 | Track flagged corrections as issues; docs remain canonical until code patched | OFS | Watch |
+| R4 | If final V&V cross-reference pass is skipped, then broken symbol/equation references degrade trust in the whole corpus | 2 | 4 | 8 | M7 exit criteria enforced before v1.0 tag; automated link/reference check script | OFS | Open |
+
+---
+
+## Verification & Test
+
+| Test | Method | Requirement Traced | Result | Evidence |
+|:-----|:-------|:-------------------|:------:|:---------|
+| Symbol table coverage — every symbol in 01–04 defined in `00_notation/symbol_table.md` | Analysis (grep audit) | NOTN-01 | PASS | Phase 1 verification |
+| Canonical parameter uniqueness — no numeric parameter defined outside master table | Analysis | NOTN-02 | PASS | `00_notation/parameter_table.md` |
+| Derivation traceability — every DSP operation traces to a physics derivation | Review | PHYS-01…07 | PASS | Phase 2/4 verification docs |
+| Cross-reference resolution — all inter-document links + equation refs valid | Script / Analysis | All | PENDING | M7 |
+
+**Repro:** `python3 8_Utils/Python/RADAR_eq.py` (baseline radar-equation sanity check) · reference audits per `.planning/phases/*/[0-9][0-9]-VERIFICATION.md`
+
+---
+
+## Quick Start
+
+```bash
+# Clone
+git clone https://github.com/Crusader0711/Merlin.git
+cd Merlin
+
+# Read in dependency order
+# 00_notation → 01_physics → 02_hardware → 03_software → 04_research
+
+# Verify baseline math tooling
+python3 8_Utils/Python/RADAR_eq.py
+```
+
+---
+
+## Tech Stack
+
+<p align="left">
+  <img src="https://img.shields.io/badge/X--Band_Radar-FF6B00?style=for-the-badge&logoColor=white" alt="X-Band Radar" />
+  <img src="https://img.shields.io/badge/FPGA_Verilog-FF6B00?style=for-the-badge&logoColor=white" alt="FPGA Verilog" />
+  <img src="https://img.shields.io/badge/CFAR%2FML_Detection-39FF14?style=for-the-badge&logoColor=black" alt="Detection Research" />
+  <img src="https://img.shields.io/badge/Markdown%2BKaTeX-1a1a1a?style=for-the-badge&logoColor=39FF14" alt="Docs" />
+  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/STM32-03234B?style=for-the-badge&logo=stmicroelectronics&logoColor=white" alt="STM32" />
+</p>
+
+---
+
+## Changelog
+
+| Version | Date | Change |
+|:-------:|:----:|:-------|
+| v0.9.5 | 2026-08-22 | Mirrored GRYFALC0N into Merlin (baseline efae9a23ba9b); adopted OFS-README-TPL v1.0; upstream AERIS-10 README preserved as `docs/UPSTREAM_README.md` |
+| v0.9.0 | 2026-03-14 | Completed Phases 5–6 (software + hardware improvement research, 8 surveys) |
+| v0.5.0 | 2026-03-13 | Completed Phases 1–4 (notation, physics, hardware, software documentation) |
+| v0.1.0 | 2026-03-13 | Initial architecture and baseline commit |
+
+---
+
+## Connect
+
+<p align="center">
+  <a href="https://github.com/Crusader0711"><img src="https://img.shields.io/badge/GitHub-Crusader0711-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>
+  <a href="https://x.com/Crusader2C7"><img src="https://img.shields.io/badge/X-@Crusader2C7-000000?style=for-the-badge&logo=x&logoColor=white" alt="X" /></a>
+  <a href="https://medium.com/@Crusader2c7"><img src="https://img.shields.io/badge/Medium-@Crusader2c7-12100E?style=for-the-badge&logo=medium&logoColor=white" alt="Medium" /></a>
+</p>
+
+---
+
+<div align="center">
+  <sub>Obsidian Forged Systems · MERLIN · Built for environments that punish fragility</sub>
+</div>
