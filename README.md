@@ -5,7 +5,7 @@
 -->
 
 <div align="center">
-  <img src="./assets/merlin_banner.png" width="880" alt="MERLIN — Obsidian Forged Systems" />
+  <img src="./assets/merlin.jpg" width="580" alt="MERLIN — Obsidian Forged Systems" />
 </div>
 
 <br/>
